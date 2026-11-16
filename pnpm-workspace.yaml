@@ -35,7 +35,7 @@ catalog:
   '@nestjs/common': '11.1.28'
   '@nestjs/core': '11.1.28'
   '@nestjs/platform-express': '11.1.28'
-  '@nestjs/swagger': '11.4.7'
+  '@nestjs/swagger': '12.1.2'
   '@nestjs/testing': '11.1.28'
   firebase-admin: '14.5.1'
   firebase-functions: '7.4.0'
