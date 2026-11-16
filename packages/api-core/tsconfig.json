@@ -1,0 +1,20 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "types": ["node", "jest"],
+        "module": "commonjs",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "strictPropertyInitialization": false,
+        // Comments travel to the `.d.ts`, so whoever imports a service reads its docblock in the editor.
+        "removeComments": false,
+        // ts-jest transpiles each file on its own; `tsc --noEmit` is what type-checks.
+        "isolatedModules": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"],
+    "references": [{ "path": "../contracts/tsconfig.build.json" }]
+}

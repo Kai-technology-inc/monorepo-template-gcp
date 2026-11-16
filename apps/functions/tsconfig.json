@@ -1,0 +1,22 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "types": ["node", "jest"],
+        "module": "commonjs",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "strictPropertyInitialization": false,
+        "isolatedModules": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"],
+    "references": [
+        { "path": "../../packages/contracts/tsconfig.build.json" },
+        { "path": "../../packages/api-core/tsconfig.build.json" },
+        { "path": "../../packages/api-workspace/tsconfig.build.json" },
+        { "path": "../../packages/api-host/tsconfig.build.json" }
+    ]
+}

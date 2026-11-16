@@ -1,0 +1,8 @@
+node_modules
+dist
+.next
+.turbo
+.functions
+.emulator-data
+pnpm-lock.yaml
+coverage

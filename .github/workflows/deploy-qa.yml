@@ -1,0 +1,26 @@
+name: Deploy QA
+
+# A tag rc* (pnpm create-version) is a release candidate: it goes to QA.
+on:
+  push:
+    tags: ['rc*']
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Tag or commit to deploy
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-qa
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: qa
+      ref: ${{ inputs.ref || github.ref_name }}

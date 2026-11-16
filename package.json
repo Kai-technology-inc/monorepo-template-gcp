@@ -1,0 +1,42 @@
+{
+    "name": "monorepo-template",
+    "version": "0.1.0",
+    "private": true,
+    "description": "A production-grade monorepo template on Firebase + GCP: NestJS API on Cloud Functions, Next.js web on App Hosting, shared zod contracts, multi-tenant workspaces and i18n.",
+    "license": "MIT",
+    "packageManager": "pnpm@12.10.1",
+    "engines": {
+        "node": "22"
+    },
+    "scripts": {
+        "dev": "bash ./scripts/dev.sh",
+        "emulators": "firebase emulators:start --only auth,firestore,storage --project demo-template --import .emulator-data --export-on-exit .emulator-data",
+        "build": "turbo run build",
+        "typecheck": "turbo run typecheck",
+        "lint": "turbo run lint",
+        "test": "turbo run test",
+        "test:arch": "turbo run test:arch",
+        "test:rules": "pnpm --filter @app/api test:rules",
+        "check": "turbo run typecheck lint test test:arch --concurrency=4",
+        "check:changed": "turbo run typecheck lint test test:arch --concurrency=4 --filter=...[origin/main]",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "functions:bundle": "turbo run bundle:functions --filter @app/functions",
+        "functions:emulate": "bash ./scripts/functions-emulate.sh",
+        "create-version": "bash ./scripts/create-version.sh",
+        "deploy:functions": "bash ./scripts/deploy-functions.sh",
+        "deploy:web": "bash ./scripts/deploy-web.sh",
+        "setup:gcp": "bash ./scripts/setup-gcp.sh",
+        "setup:web": "node ./scripts/setup-web.mjs",
+        "doctor": "node ./scripts/doctor.mjs"
+    },
+    "dependencies": {
+        "tsc7": "npm:typescript@7.0.2",
+        "turbo": "2.11.7",
+        "typescript": "catalog:"
+    },
+    "devDependencies": {
+        "firebase-tools": "14.27.0",
+        "prettier": "catalog:"
+    }
+}

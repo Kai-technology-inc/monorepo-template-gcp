@@ -1,0 +1,41 @@
+{
+    "name": "@app/functions",
+    "version": "0.1.0",
+    "description": "The Cloud Functions codebase: one HTTP Function per entry of API_FUNCTIONS, bundled with esbuild into .functions/ for deploy.",
+    "private": true,
+    "license": "MIT",
+    "engines": {
+        "node": "22"
+    },
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc -b tsconfig.build.json",
+        "bundle:functions": "node ../../scripts/bundle-functions.mjs",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint \"src/**/*.ts\"",
+        "test": "jest --passWithNoTests",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "dependencies": {
+        "@app/api-core": "workspace:*",
+        "@app/api-host": "workspace:*",
+        "@app/api-workspace": "workspace:*",
+        "@app/contracts": "workspace:*",
+        "@nestjs/common": "catalog:",
+        "esbuild": "catalog:",
+        "firebase-admin": "catalog:",
+        "firebase-functions": "catalog:",
+        "reflect-metadata": "catalog:",
+        "typescript": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "@jest/globals": "catalog:",
+        "@types/jest": "catalog:",
+        "@types/node": "catalog:",
+        "eslint": "catalog:",
+        "jest": "catalog:",
+        "prettier": "catalog:",
+        "ts-jest": "catalog:"
+    }
+}

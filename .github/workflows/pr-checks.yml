@@ -1,0 +1,76 @@
+name: PR checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Optional Turborepo remote cache: set TURBO_TEAM/TURBO_API as variables and TURBO_TOKEN as a secret.
+  TURBO_API: ${{ vars.TURBO_API }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+
+jobs:
+  checks:
+    name: Typecheck, lint, tests, architecture
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - name: Checks (only what changed on a PR, everything on main)
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            pnpm turbo run typecheck lint test test:arch --concurrency=2 --filter="...[origin/${{ github.base_ref }}]"
+          else
+            pnpm turbo run typecheck lint test test:arch --concurrency=2
+          fi
+      - name: Build (API bundle and web)
+        run: |
+          pnpm turbo run bundle:functions --filter @app/functions
+          pnpm turbo run build --filter @app/web
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:3100
+          NEXT_PUBLIC_FIREBASE_API_KEY: demo-api-key
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: demo-template.firebaseapp.com
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: demo-template
+          NEXT_PUBLIC_APP_ENVIRONMENT: local
+
+  rules:
+    name: Firestore rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter='@app/api^...'
+      - run: pnpm test:rules

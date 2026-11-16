@@ -1,0 +1,41 @@
+{
+    "name": "@app/contracts",
+    "version": "0.1.0",
+    "description": "Layer 0: the shared model. zod schemas and types for identity, workspaces, roles, errors and the URL vocabulary. Imports nothing from the workspace.",
+    "private": true,
+    "license": "MIT",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "require": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsc -b tsconfig.build.json",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint src",
+        "test": "jest",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "dependencies": {
+        "typescript": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "@jest/globals": "catalog:",
+        "@types/jest": "catalog:",
+        "@types/node": "catalog:",
+        "eslint": "catalog:",
+        "jest": "catalog:",
+        "prettier": "catalog:",
+        "ts-jest": "catalog:"
+    }
+}

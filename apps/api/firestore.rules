@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// THE CLIENT READS LITTLE AND WRITES NOTHING
+//
+// Every write goes through the API (Admin SDK, which bypasses these rules), where the business rules live. The
+// browser may read only what the API would show it anyway: its own profile, and the workspaces it belongs to with
+// their members, e.g. for realtime listeners. Invitations hold a token hash and are never readable. Anything not
+// matched here is denied. A new collection is denied until you add a block for it, with its spec in
+// apps/api/src/firestore-rules/firestore.rules.spec.ts.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isMember(workspaceId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/workspaces/$(workspaceId)/members/$(request.auth.uid));
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    match /workspaces/{workspaceId} {
+      allow read: if isMember(workspaceId);
+      allow write: if false;
+
+      match /members/{userId} {
+        allow read: if isMember(workspaceId);
+        allow write: if false;
+      }
+
+      match /invitations/{invitationId} {
+        allow read, write: if false;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

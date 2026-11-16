@@ -1,0 +1,26 @@
+{
+    "functions": [
+        {
+            "codebase": "default",
+            "source": "apps/functions/.functions",
+            "runtime": "nodejs22",
+            "predeploy": ["bash scripts/bundle-for-deploy.sh"],
+            "ignore": ["node_modules", "*.map", ".secret.local"]
+        }
+    ],
+    "firestore": {
+        "rules": "apps/api/firestore.rules",
+        "indexes": "apps/api/firestore.indexes.json"
+    },
+    "storage": {
+        "rules": "apps/api/storage.rules"
+    },
+    "emulators": {
+        "singleProjectMode": true,
+        "auth": { "port": 9099 },
+        "firestore": { "port": 8080 },
+        "storage": { "port": 9199 },
+        "functions": { "port": 5001 },
+        "ui": { "enabled": true, "port": 4000 }
+    }
+}

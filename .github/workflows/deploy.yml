@@ -1,0 +1,101 @@
+name: Deploy (reusable)
+
+# The one deploy procedure, called by deploy-qa.yml and deploy-prod.yml. Both jobs authenticate to Google Cloud
+# with Workload Identity Federation (no keys): scripts/configure-wif.sh creates the provider and the deployer.
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      ref:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  gate:
+    name: Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run typecheck test:arch --concurrency=2
+
+  api:
+    name: API (Cloud Functions)
+    needs: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - name: Check configuration
+        env:
+          PROJECT: ${{ vars[format('{0}_FIREBASE_PROJECT_ID', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          PROVIDER: ${{ vars[format('{0}_WIF_PROVIDER', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          ACCOUNT: ${{ vars[format('{0}_DEPLOY_SERVICE_ACCOUNT', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          ORIGINS: ${{ vars[format('{0}_ALLOWED_ORIGINS', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+        run: |
+          for name in PROJECT PROVIDER ACCOUNT ORIGINS; do
+            [[ -n "${!name}" ]] || { echo "Missing GitHub variable for $name (see docs/DEPLOY.md)" >&2; exit 1; }
+          done
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars[format('{0}_WIF_PROVIDER', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          service_account: ${{ vars[format('{0}_DEPLOY_SERVICE_ACCOUNT', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+      - run: bash scripts/deploy-functions.sh ${{ inputs.environment }}
+        env:
+          FIREBASE_PROJECT_ID: ${{ vars[format('{0}_FIREBASE_PROJECT_ID', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          ALLOWED_ORIGINS: ${{ vars[format('{0}_ALLOWED_ORIGINS', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          FUNCTIONS_REGION: ${{ vars.FUNCTIONS_REGION || 'us-central1' }}
+
+  web:
+    name: Web (App Hosting)
+    # The web goes after the API: a new screen may call a route the old API does not have.
+    needs: api
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars[format('{0}_WIF_PROVIDER', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          service_account: ${{ vars[format('{0}_DEPLOY_SERVICE_ACCOUNT', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+      - run: bash scripts/deploy-web.sh ${{ inputs.environment }}
+        env:
+          GITHUB_SHA: ${{ inputs.ref }}
+          FIREBASE_PROJECT_ID: ${{ vars[format('{0}_FIREBASE_PROJECT_ID', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          FIREBASE_PROJECT_NUMBER: ${{ vars[format('{0}_FIREBASE_PROJECT_NUMBER', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          APPHOSTING_BACKEND_ID: ${{ vars[format('{0}_APPHOSTING_BACKEND_ID', inputs.environment == 'prod' && 'PROD' || 'QA')] || 'web' }}

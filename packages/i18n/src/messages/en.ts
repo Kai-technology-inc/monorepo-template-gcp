@@ -1,0 +1,258 @@
+import type { ErrorCode, WorkspaceRole } from '@app/contracts';
+
+/**
+ * THE BASE DICTIONARY (English)
+ *
+ * The source of truth for keys and placeholders: every other locale is type-checked against this file. Rules:
+ *
+ * - Group by screen or feature (`auth.login.*`, `members.*`), not by word. The same word in two places is two keys:
+ *   they may translate differently.
+ * - Placeholders are `{camelCase}`. Plurals are `{ one, other }` (plus `zero` when "No items" reads better) and
+ *   always receive `{count}`.
+ * - Markup for `<RichText>` is `<tag>…</tag>`, never HTML attributes.
+ * - Keep it `as const`: that is what makes keys and placeholders type-checked.
+ */
+export const en = {
+    common: {
+        appName: 'Starter',
+        appDescription: 'A production-ready starter on Firebase and Google Cloud.',
+        loading: 'Loading…',
+        save: 'Save',
+        saving: 'Saving…',
+        saved: 'Saved',
+        cancel: 'Cancel',
+        confirm: 'Confirm',
+        remove: 'Remove',
+        back: 'Back',
+        continue: 'Continue',
+        close: 'Close',
+        retry: 'Try again',
+        copy: 'Copy',
+        copied: 'Copied',
+        signOut: 'Sign out',
+        email: 'Email',
+        password: 'Password',
+        name: 'Name',
+        optional: 'optional',
+        you: 'you',
+    },
+    nav: {
+        main: 'Main navigation',
+        dashboard: 'Dashboard',
+        members: 'Members',
+        settings: 'Settings',
+        openMenu: 'Open menu',
+        skipToContent: 'Skip to content',
+    },
+    locale: {
+        label: 'Language',
+    },
+    landing: {
+        title: 'Ship your product, not your plumbing',
+        subtitle:
+            'Sign-in, workspaces, roles, invitations and translations are already done. Start building what makes your product yours.',
+        getStarted: 'Get started',
+        signIn: 'Sign in',
+        features: {
+            authTitle: 'Accounts and workspaces',
+            authBody:
+                'Email sign-in, multiple workspaces per account, roles and invitations by link.',
+            stackTitle: 'Firebase and Google Cloud',
+            stackBody:
+                'A NestJS API on Cloud Functions and a Next.js web app on App Hosting, deployed from tags.',
+            qualityTitle: 'Guardrails included',
+            qualityBody:
+                'Typed contracts, architecture tests, CI checks and a language module for every screen.',
+        },
+    },
+    auth: {
+        login: {
+            title: 'Sign in',
+            subtitle: 'Welcome back.',
+            submit: 'Sign in',
+            submitting: 'Signing in…',
+            forgotPassword: 'Forgot your password?',
+            noAccount: "Don't have an account? <link>Create one</link>",
+        },
+        register: {
+            title: 'Create your account',
+            subtitle: 'It takes less than a minute.',
+            displayName: 'Your name',
+            workspaceName: 'Workspace name',
+            workspaceHint: 'Your company or team. You can rename it later.',
+            passwordHint: 'At least 8 characters.',
+            submit: 'Create account',
+            submitting: 'Creating your account…',
+            haveAccount: 'Already have an account? <link>Sign in</link>',
+            completeTitle: 'Finish setting up your account',
+            completeSubtitle: 'Signed in as {email}. Just a couple of details.',
+        },
+        forgot: {
+            title: 'Reset your password',
+            subtitle: "Enter your email and we'll send you a link to choose a new password.",
+            submit: 'Send link',
+            submitting: 'Sending…',
+            sentTitle: 'Check your inbox',
+            sentBody: 'If an account exists for {email}, you will receive a link in a few minutes.',
+            backToLogin: 'Back to sign in',
+        },
+        reset: {
+            title: 'Choose a new password',
+            newPassword: 'New password',
+            submit: 'Save password',
+            submitting: 'Saving…',
+            done: 'Your password was changed. You can sign in now.',
+            goToLogin: 'Go to sign in',
+        },
+        verify: {
+            title: 'Verify your email',
+            body: 'We sent a verification link to {email}. Open it to continue.',
+            resend: 'Send it again',
+            resent: 'Sent. Check your inbox and spam folder.',
+            verified: 'Your email is verified.',
+            checkAgain: "I've verified it",
+        },
+        action: {
+            processing: 'One moment…',
+            invalid: 'This link is invalid or has expired.',
+        },
+        errors: {
+            invalidCredential: 'The email or password is incorrect.',
+            emailInUse: 'There is already an account with this email. Sign in instead.',
+            weakPassword: 'The password is too weak. Use at least 8 characters.',
+            invalidEmail: 'Enter a valid email address.',
+            tooManyRequests: 'Too many attempts. Wait a few minutes and try again.',
+            network: "We couldn't reach the server. Check your connection.",
+            expiredActionCode: 'This link has expired. Request a new one.',
+            generic: 'Something went wrong. Please try again.',
+        },
+    },
+    invitations: {
+        accept: {
+            title: 'Join {workspace}',
+            body: '{email} was invited as {role}.',
+            submit: 'Accept invitation',
+            submitting: 'Joining…',
+            signInToAccept: 'Sign in with {email} to accept.',
+            registerToAccept: 'New here? <link>Create an account</link> with {email}.',
+            wrongAccount: 'You are signed in as {current}, but this invitation is for {email}.',
+            switchAccount: 'Use another account',
+            signIn: 'Sign in to accept',
+            invalid: 'This invitation is no longer valid. Ask for a new one.',
+        },
+    },
+    dashboard: {
+        title: 'Dashboard',
+        welcome: 'Welcome, {name}',
+        workspaceSummary: 'You are working in {workspace} as {role}.',
+        memberCount: { zero: 'No members yet', one: '{count} member', other: '{count} members' },
+        nextSteps: {
+            title: 'Next steps',
+            invite: 'Invite your team from <link>Members</link>.',
+            language: 'Change your language in <link>Settings</link>.',
+            build: 'Add your first module: see docs/EXTENDING.md.',
+        },
+    },
+    members: {
+        title: 'Members',
+        subtitle: 'People with access to {workspace}.',
+        count: { one: '{count} member', other: '{count} members' },
+        columns: {
+            name: 'Name',
+            email: 'Email',
+            role: 'Role',
+            joined: 'Joined',
+            expires: 'Expires',
+            actions: 'Actions',
+        },
+        changeRole: 'Change role for {name}',
+        remove: 'Remove',
+        removeConfirm: 'Remove {name} from this workspace? They will lose access immediately.',
+        removed: '{name} was removed.',
+        removeTitle: 'Remove member',
+        invite: {
+            title: 'Invite someone',
+            email: 'Email',
+            role: 'Role',
+            submit: 'Create invitation',
+            submitting: 'Creating…',
+            created: 'Invitation created for {email}. Share this link with them:',
+            linkHint: 'The link works once and expires in {days} days.',
+            linkLabel: 'Invitation link',
+        },
+        pending: {
+            title: 'Pending invitations',
+            empty: 'No pending invitations.',
+            expires: 'Expires {date}',
+            revoke: 'Revoke',
+            revoked: 'Invitation revoked.',
+        },
+    },
+    roles: {
+        OWNER: 'Owner',
+        ADMIN: 'Admin',
+        MEMBER: 'Member',
+    } satisfies Record<WorkspaceRole, string>,
+    roleDescriptions: {
+        OWNER: 'Full control, including the workspace itself.',
+        ADMIN: 'Manages members and invitations.',
+        MEMBER: 'Uses the workspace.',
+    } satisfies Record<WorkspaceRole, string>,
+    workspace: {
+        switcher: 'Switch workspace',
+        current: 'Current workspace',
+        create: 'New workspace',
+        none: 'You are not part of any workspace yet.',
+    },
+    settings: {
+        title: 'Settings',
+        profile: {
+            title: 'Your profile',
+            displayName: 'Name',
+            language: 'Language',
+            languageHint: 'Used for the interface and the emails we send you.',
+            saved: 'Profile saved.',
+        },
+        workspace: {
+            title: 'Workspace',
+            name: 'Name',
+            slug: 'Address',
+            saved: 'Workspace saved.',
+            readOnly: 'Only owners and admins can change the workspace.',
+        },
+        newWorkspace: {
+            title: 'Create another workspace',
+            body: 'For another company or team. You will be its owner.',
+            name: 'Workspace name',
+            submit: 'Create workspace',
+            submitting: 'Creating…',
+        },
+    },
+    errors: {
+        UNAUTHENTICATED: 'Your session has ended. Sign in again.',
+        EMAIL_NOT_VERIFIED: 'Verify your email to continue.',
+        FORBIDDEN: "You don't have permission to do that.",
+        NOT_FOUND: "We couldn't find what you were looking for.",
+        VALIDATION_FAILED: 'Some fields are not valid. Review them and try again.',
+        CONFLICT: 'Someone else changed this at the same time. Reload and try again.',
+        ALREADY_REGISTERED: 'This account is already set up.',
+        NOT_REGISTERED: 'Finish creating your account to continue.',
+        NOT_A_MEMBER: 'You are not a member of this workspace.',
+        SLUG_TAKEN: 'That address is taken. Choose another one.',
+        LAST_OWNER: 'A workspace needs at least one owner.',
+        CANNOT_CHANGE_OWN_ROLE: "You can't change your own role.",
+        ALREADY_A_MEMBER: 'That person is already a member.',
+        INVITATION_INVALID: 'This invitation is no longer valid.',
+        INVITATION_EXPIRED: 'This invitation has expired. Ask for a new one.',
+        INVITATION_EMAIL_MISMATCH: 'This invitation was sent to a different email address.',
+        RATE_LIMITED: 'Too many requests. Wait a moment and try again.',
+        INTERNAL: 'Something went wrong on our side. Please try again.',
+        network: "We couldn't reach the server. Check your connection.",
+        unknown: 'Something went wrong. Please try again.',
+    } satisfies Record<ErrorCode | 'network' | 'unknown', string>,
+    notFound: {
+        title: 'Page not found',
+        body: 'The page you are looking for does not exist or was moved.',
+        home: 'Go home',
+    },
+} as const;

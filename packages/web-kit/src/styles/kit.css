@@ -1,0 +1,202 @@
+/* The primitives' styles. One block per component, named `.ui-<component>`. */
+
+.ui-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.5rem;
+    padding: 0 var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 120ms ease;
+}
+.ui-button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.ui-button--primary {
+    background: var(--color-primary);
+    color: var(--color-primary-text);
+}
+.ui-button--primary:hover:not([disabled]) {
+    background: var(--color-primary-hover);
+}
+.ui-button--secondary {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+.ui-button--secondary:hover:not([disabled]) {
+    background: var(--color-surface-muted);
+}
+.ui-button--ghost {
+    background: transparent;
+    color: var(--color-text);
+}
+.ui-button--ghost:hover:not([disabled]) {
+    background: var(--color-surface-muted);
+}
+.ui-button--danger {
+    background: var(--color-danger);
+    color: #fff;
+}
+.ui-button--block {
+    width: 100%;
+}
+
+.ui-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+.ui-field__label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+.ui-field__hint {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+.ui-field__error {
+    font-size: var(--text-xs);
+    color: var(--color-danger);
+}
+.ui-input,
+.ui-select {
+    min-height: 2.5rem;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+}
+.ui-input[readonly],
+.ui-input[disabled],
+.ui-select[disabled] {
+    background: var(--color-surface-muted);
+    color: var(--color-text-muted);
+}
+.ui-input[aria-invalid='true'] {
+    border-color: var(--color-danger);
+}
+
+.ui-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-5);
+}
+.ui-card__title {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-lg);
+}
+
+.ui-alert {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+}
+.ui-alert--error {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+.ui-alert--success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+.ui-alert--info {
+    background: var(--color-info-bg);
+    color: var(--color-text);
+}
+
+.ui-spinner {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: ui-spin 700ms linear infinite;
+}
+@keyframes ui-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.ui-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-8);
+    color: var(--color-text-muted);
+}
+
+.ui-empty {
+    padding: var(--space-6);
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.ui-dialog {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-5);
+    max-width: min(28rem, 90vw);
+}
+.ui-dialog::backdrop {
+    background: rgb(0 0 0 / 40%);
+}
+.ui-dialog__title {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-lg);
+}
+.ui-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+}
+
+.ui-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+.ui-table th,
+.ui-table td {
+    padding: var(--space-3);
+    text-align: start;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+}
+.ui-table th {
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+.ui-table-wrap {
+    overflow-x: auto;
+}
+
+.ui-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.ui-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}

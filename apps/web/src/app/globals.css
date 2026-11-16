@@ -1,0 +1,46 @@
+/* App-level styles. Tokens and primitives come from @app/web-kit; screens' layout from @app/web-platform. */
+
+.landing {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4) var(--space-8);
+}
+.landing__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+}
+.landing__hero {
+    padding: var(--space-8) 0 var(--space-6);
+    max-width: 44rem;
+}
+.landing__hero h1 {
+    margin: 0 0 var(--space-4);
+    font-size: var(--text-2xl);
+    line-height: 1.15;
+}
+.landing__hero p {
+    margin: 0 0 var(--space-5);
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+}
+.landing__features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-4);
+}
+.landing__features h2 {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-md);
+}
+.landing__features p {
+    margin: 0;
+    color: var(--color-text-muted);
+}
+.not-found {
+    max-width: 32rem;
+    margin: var(--space-8) auto;
+    padding: 0 var(--space-4);
+    text-align: center;
+}

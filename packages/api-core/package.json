@@ -1,0 +1,59 @@
+{
+    "name": "@app/api-core",
+    "version": "0.1.0",
+    "description": "Layer 1 of the API: configuration, Firebase Admin, authentication and session resolution, HTTP errors and validation, and the persistence Store. No product module lives here.",
+    "private": true,
+    "license": "MIT",
+    "engines": {
+        "node": "22"
+    },
+    "exports": {
+        "./package.json": "./package.json",
+        "./*": {
+            "types": "./dist/*.d.ts",
+            "require": "./dist/*.js",
+            "default": "./dist/*.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/*"
+            ]
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc -b tsconfig.build.json",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint \"src/**/*.ts\"",
+        "test": "jest",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "dependencies": {
+        "@app/contracts": "workspace:*",
+        "@nestjs/common": "catalog:",
+        "@nestjs/core": "catalog:",
+        "express": "catalog:",
+        "firebase-admin": "catalog:",
+        "reflect-metadata": "catalog:",
+        "rxjs": "catalog:",
+        "typescript": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "@jest/globals": "catalog:",
+        "@nestjs/testing": "catalog:",
+        "@types/express": "catalog:",
+        "@types/jest": "catalog:",
+        "@types/node": "catalog:",
+        "eslint": "catalog:",
+        "jest": "catalog:",
+        "prettier": "catalog:",
+        "ts-jest": "catalog:",
+        "@nestjs/platform-express": "catalog:"
+    }
+}

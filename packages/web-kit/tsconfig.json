@@ -1,0 +1,17 @@
+{
+    "extends": "../../tsconfig.base.json",
+    // Published as source: Next transpiles it (`transpilePackages`). Here it is only type-checked, with the same
+    // options the web app compiles it with. `next` brings the ambient declarations for `*.css` imports.
+    "compilerOptions": {
+        "types": ["node", "next"],
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "noEmit": true,
+        "isolatedModules": true,
+        "resolveJsonModule": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
+}

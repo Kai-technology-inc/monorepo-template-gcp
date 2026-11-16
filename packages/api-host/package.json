@@ -1,0 +1,65 @@
+{
+    "name": "@app/api-host",
+    "version": "0.1.0",
+    "description": "The composition of the API: boots Nest per Cloud Function, strips the function prefix, applies the cross-cutting HTTP setup (helmet, CORS, validation errors, Swagger) and the global Function options. Shared by the Functions codebase and the local server.",
+    "private": true,
+    "license": "MIT",
+    "engines": {
+        "node": "22"
+    },
+    "exports": {
+        "./package.json": "./package.json",
+        "./*": {
+            "types": "./dist/*.d.ts",
+            "require": "./dist/*.js",
+            "default": "./dist/*.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/*"
+            ]
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc -b tsconfig.build.json",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint \"src/**/*.ts\"",
+        "test": "jest",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "dependencies": {
+        "@app/api-core": "workspace:*",
+        "@app/api-workspace": "workspace:*",
+        "@app/contracts": "workspace:*",
+        "@nestjs/common": "catalog:",
+        "@nestjs/core": "catalog:",
+        "@nestjs/platform-express": "catalog:",
+        "@nestjs/swagger": "catalog:",
+        "dotenv": "catalog:",
+        "express": "catalog:",
+        "firebase-functions": "catalog:",
+        "helmet": "catalog:",
+        "reflect-metadata": "catalog:",
+        "rxjs": "catalog:",
+        "typescript": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "@jest/globals": "catalog:",
+        "@nestjs/testing": "catalog:",
+        "@types/express": "catalog:",
+        "@types/jest": "catalog:",
+        "@types/node": "catalog:",
+        "eslint": "catalog:",
+        "jest": "catalog:",
+        "prettier": "catalog:",
+        "ts-jest": "catalog:",
+        "@nestjs/platform-express": "catalog:"
+    }
+}

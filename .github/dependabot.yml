@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      nest:
+        patterns: ['@nestjs/*']
+      firebase:
+        patterns: ['firebase', 'firebase-*', '@firebase/*']
+      next-react:
+        patterns: ['next', 'eslint-config-next', 'react', 'react-dom', '@types/react*']
+      tooling:
+        patterns:
+          [
+            'eslint*',
+            '@eslint/*',
+            'typescript-eslint',
+            'prettier',
+            'jest',
+            'ts-jest',
+            'vitest',
+            'turbo',
+          ]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

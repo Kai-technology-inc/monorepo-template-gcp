@@ -1,0 +1,31 @@
+name: Deploy production
+
+# Production is a GitHub Release, published by a person from an rc that passed QA:
+#   gh release create v0.1.7 --target rc0.1.7 --generate-notes
+# The jobs run in the "prod" GitHub environment: add required reviewers there (Settings → Environments) so a
+# second person approves every production deploy.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  check-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only v* releases deploy
+        run: |
+          [[ "${{ github.event.release.tag_name }}" == v* ]] || { echo "Release tag must start with v"; exit 1; }
+  deploy:
+    needs: check-tag
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: prod
+      ref: ${{ github.event.release.tag_name }}

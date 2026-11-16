@@ -1,0 +1,35 @@
+{
+    "name": "@app/web-platform",
+    "version": "0.1.0",
+    "description": "The platform screens: authentication, invitations, the app shell, dashboard, members and settings. Thin Next routes in apps/web render these. Published as source; Next transpiles it.",
+    "private": true,
+    "license": "MIT",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint src",
+        "test": "vitest run",
+        "test:watch": "vitest"
+    },
+    "dependencies": {
+        "@app/contracts": "workspace:*",
+        "@app/i18n": "workspace:*",
+        "@app/web-kit": "workspace:*",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "firebase": "catalog:",
+        "next": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "typescript": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "eslint": "catalog:",
+        "vitest": "catalog:"
+    }
+}

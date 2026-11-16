@@ -1,0 +1,46 @@
+{
+    "name": "@app/api",
+    "version": "0.1.0",
+    "description": "The local API server (the same modules the Functions serve, under the same paths), the architecture tests of the whole repo, and the Firestore/Storage rules and indexes.",
+    "private": true,
+    "license": "MIT",
+    "engines": {
+        "node": "22"
+    },
+    "scripts": {
+        "build": "tsc -b tsconfig.build.json",
+        "dev": "node ./scripts/dev.mjs",
+        "start": "node --env-file-if-exists=.env dist/main.js",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint \"src/**/*.ts\"",
+        "test": "jest",
+        "test:arch": "jest --config jest.arch.config.js",
+        "test:rules": "firebase emulators:exec --config firebase.rules-test.json --only firestore,storage --project demo-template-rules \"jest --config jest.rules.config.js --runInBand\"",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "dependencies": {
+        "@app/api-core": "workspace:*",
+        "@app/api-host": "workspace:*",
+        "@app/api-workspace": "workspace:*",
+        "@app/contracts": "workspace:*",
+        "@nestjs/common": "catalog:",
+        "@nestjs/core": "catalog:",
+        "@nestjs/platform-express": "catalog:",
+        "reflect-metadata": "catalog:",
+        "rxjs": "catalog:",
+        "typescript": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "@firebase/rules-unit-testing": "5.0.2",
+        "@jest/globals": "catalog:",
+        "@nestjs/testing": "catalog:",
+        "@types/jest": "catalog:",
+        "@types/node": "catalog:",
+        "eslint": "catalog:",
+        "firebase": "catalog:",
+        "jest": "catalog:",
+        "prettier": "catalog:",
+        "ts-jest": "catalog:"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig.json",
+    // `tsc -b` follows the references, so `pnpm dev` (`tsc -b --watch`) rebuilds a package when you edit it.
+    "compilerOptions": {
+        "types": ["node"],
+        "composite": false,
+        "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    },
+    "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+}

@@ -1,0 +1,41 @@
+{
+    "name": "@app/web",
+    "version": "0.1.0",
+    "description": "The web app: Next.js (App Router) on Firebase App Hosting. Routes are thin; screens live in @app/web-platform.",
+    "private": true,
+    "license": "MIT",
+    "engines": {
+        "node": "22"
+    },
+    "scripts": {
+        "dev": "next dev -p 3000",
+        "build": "next build",
+        "start": "next start -p 3000",
+        "lint": "eslint src",
+        "typecheck": "next typegen && tsc --noEmit -p tsconfig.spec.json",
+        "test": "vitest run",
+        "test:watch": "vitest"
+    },
+    "dependencies": {
+        "@app/contracts": "workspace:*",
+        "@app/i18n": "workspace:*",
+        "@app/web-kit": "workspace:*",
+        "@app/web-platform": "workspace:*",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "firebase": "catalog:",
+        "next": "16.4.3",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "server-only": "0.0.1",
+        "turbo": "2.11.7",
+        "typescript": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "eslint": "catalog:",
+        "vitest": "catalog:"
+    }
+}

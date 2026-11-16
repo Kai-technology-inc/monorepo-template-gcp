@@ -1,0 +1,58 @@
+{
+    "name": "@app/api-workspace",
+    "version": "0.1.0",
+    "description": "Layer 2 of the API: accounts (registration, session, profile), workspaces, members and invitations, and the health check. Builds on @app/api-core; imports nothing above it.",
+    "private": true,
+    "license": "MIT",
+    "engines": {
+        "node": "22"
+    },
+    "exports": {
+        "./package.json": "./package.json",
+        "./*": {
+            "types": "./dist/*.d.ts",
+            "require": "./dist/*.js",
+            "default": "./dist/*.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/*"
+            ]
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc -b tsconfig.build.json",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint \"src/**/*.ts\"",
+        "test": "jest",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "dependencies": {
+        "@app/api-core": "workspace:*",
+        "@app/contracts": "workspace:*",
+        "@nestjs/common": "catalog:",
+        "@nestjs/core": "catalog:",
+        "reflect-metadata": "catalog:",
+        "rxjs": "catalog:",
+        "typescript": "catalog:",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "@jest/globals": "catalog:",
+        "@nestjs/testing": "catalog:",
+        "@types/express": "catalog:",
+        "@types/jest": "catalog:",
+        "@types/node": "catalog:",
+        "eslint": "catalog:",
+        "jest": "catalog:",
+        "prettier": "catalog:",
+        "ts-jest": "catalog:",
+        "@nestjs/platform-express": "catalog:"
+    }
+}

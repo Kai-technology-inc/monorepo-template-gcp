@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Nothing is readable or writable from the client until a feature needs it. Prefer signed URLs issued by the API
+// for uploads and downloads; if you open a path here, add its spec in src/firestore-rules/storage.rules.spec.ts.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

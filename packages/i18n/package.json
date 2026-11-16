@@ -1,0 +1,33 @@
+{
+    "name": "@app/i18n",
+    "version": "0.1.0",
+    "description": "The language module: typed dictionaries, interpolation, plurals, Intl formatters, locale negotiation and React bindings. Every text a person reads in the web comes from here.",
+    "private": true,
+    "license": "MIT",
+    "exports": {
+        ".": "./src/index.ts",
+        "./messages": "./src/messages/index.ts",
+        "./react": "./src/react.tsx"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint src",
+        "test": "vitest run",
+        "test:watch": "vitest"
+    },
+    "dependencies": {
+        "@app/contracts": "workspace:*",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "react": "catalog:",
+        "typescript": "catalog:"
+    },
+    "devDependencies": {
+        "@app/eslint-config": "workspace:*",
+        "eslint": "catalog:",
+        "next": "catalog:",
+        "react-dom": "catalog:",
+        "vitest": "catalog:",
+        "@types/react-dom": "catalog:"
+    }
+}

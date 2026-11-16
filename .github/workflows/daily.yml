@@ -1,0 +1,33 @@
+name: Daily
+
+# Every gate on main, every day: what a PR only checks for the packages it touched, this checks for all of them,
+# with a cold cache. A red run here is something that slipped past a PR (a dependency, a date, a flaky test).
+on:
+  schedule:
+    - cron: '0 12 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run typecheck lint test test:arch --concurrency=2 --force
+      - run: pnpm test:rules
+      - run: pnpm audit --prod --audit-level=high

@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    // Composite: the packages above reference it and read the emitted `.d.ts`, not the source.
+    "compilerOptions": {
+        "types": ["node"],
+        "composite": true,
+        "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    },
+    // Specs are not published; the test doubles (`testing/`) are, because the packages above use them in their specs.
+    "exclude": ["node_modules", "dist", "**/*.spec.ts"],
+    "references": [{ "path": "../contracts/tsconfig.build.json" }]
+}
