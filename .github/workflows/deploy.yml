@@ -26,7 +26,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           persist-credentials: false
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
@@ -55,7 +55,7 @@ jobs:
           for name in PROJECT PROVIDER ACCOUNT ORIGINS; do
             [[ -n "${!name}" ]] || { echo "Missing GitHub variable for $name (see docs/DEPLOY.md)" >&2; exit 1; }
           done
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
@@ -83,7 +83,7 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
           persist-credentials: false
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
