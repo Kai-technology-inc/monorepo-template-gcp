@@ -13,7 +13,7 @@
         "bundle:functions": "node ../../scripts/bundle-functions.mjs",
         "typecheck": "tsc --noEmit -p tsconfig.json",
         "lint": "eslint \"src/**/*.ts\"",
-        "test": "jest --passWithNoTests",
+        "test": "vitest run --passWithNoTests",
         "format": "prettier --write \"src/**/*.ts\""
     },
     "dependencies": {
@@ -30,12 +30,9 @@
     },
     "devDependencies": {
         "@app/eslint-config": "workspace:*",
-        "@jest/globals": "catalog:",
-        "@types/jest": "catalog:",
         "@types/node": "catalog:",
         "eslint": "catalog:",
-        "jest": "catalog:",
         "prettier": "catalog:",
-        "ts-jest": "catalog:"
+        "vitest": "catalog:"
     }
 }

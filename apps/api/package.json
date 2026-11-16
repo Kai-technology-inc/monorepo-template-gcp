@@ -13,9 +13,9 @@
         "start": "node --env-file-if-exists=.env dist/main.js",
         "typecheck": "tsc --noEmit -p tsconfig.json",
         "lint": "eslint \"src/**/*.ts\"",
-        "test": "jest",
-        "test:arch": "jest --config jest.arch.config.js",
-        "test:rules": "firebase emulators:exec --config firebase.rules-test.json --only firestore,storage --project demo-template-rules \"jest --config jest.rules.config.js --runInBand\"",
+        "test": "vitest run",
+        "test:arch": "vitest run --config vitest.arch.config.mts",
+        "test:rules": "firebase emulators:exec --config firebase.rules-test.json --only firestore,storage --project demo-template-rules \"vitest run --config vitest.rules.config.mts\"",
         "format": "prettier --write \"src/**/*.ts\""
     },
     "dependencies": {
@@ -33,14 +33,11 @@
     "devDependencies": {
         "@app/eslint-config": "workspace:*",
         "@firebase/rules-unit-testing": "6.0.0",
-        "@jest/globals": "catalog:",
         "@nestjs/testing": "catalog:",
-        "@types/jest": "catalog:",
         "@types/node": "catalog:",
         "eslint": "catalog:",
         "firebase": "catalog:",
-        "jest": "catalog:",
         "prettier": "catalog:",
-        "ts-jest": "catalog:"
+        "vitest": "catalog:"
     }
 }

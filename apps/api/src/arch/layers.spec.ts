@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import path from 'node:path';
 import { REPO_ROOT, sourceFiles, workspaceImports, workspacePackages } from './repo';
 

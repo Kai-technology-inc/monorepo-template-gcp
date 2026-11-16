@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         // Node globals (`process`, `Buffer`). Since TypeScript 6 an empty `types` means "none": every tsconfig names
-        // the ambient types its code uses; the one that type-checks specs adds jest's.
+        // the ambient types its code uses (specs import theirs from `vitest`).
         "types": ["node"],
         "target": "ES2022",
         "strict": true,

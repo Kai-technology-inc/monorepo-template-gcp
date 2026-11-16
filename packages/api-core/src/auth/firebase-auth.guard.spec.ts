@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { Controller, Get, Post, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AllExceptionsFilter } from '../http/all-exceptions.filter';

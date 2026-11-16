@@ -21,7 +21,7 @@ export function layerConfig({ dirname, forbidden, message }) {
         eslintPluginPrettierRecommended,
         {
             languageOptions: {
-                globals: { ...globals.node, ...globals.jest },
+                globals: globals.node,
                 parserOptions: { projectService: true, tsconfigRootDir: dirname },
             },
             rules: {

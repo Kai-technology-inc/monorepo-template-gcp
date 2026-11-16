@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, it } from 'vitest';
 import {
     assertFails,
     initializeTestEnvironment,
