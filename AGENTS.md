@@ -36,7 +36,7 @@ needs explaining goes in the document the line points to. Each package has its o
 
 ## Tools
 
-- **Node 22 and pnpm 12** (`npm i -g pnpm`). Java 17+ for the Firestore emulator.
+- **Node 22 and pnpm 12** (`npm i -g pnpm`). Java 21+ for the Firebase emulators.
 - **pnpm is strict:** what a package imports must be in its own `package.json`. Shared versions live in the catalog
   of `pnpm-workspace.yaml` (`"catalog:"`), exact. A new dependency with an install script stops `pnpm install` until
   it is listed in `allowBuilds` with `true`/`false` and the reason.

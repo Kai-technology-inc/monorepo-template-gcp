@@ -26,7 +26,7 @@ any moment.
 
 ## Quick start (no Google Cloud account needed)
 
-Requirements: Node 22, pnpm 12 (`npm i -g pnpm`), Java 17+ (for the Firestore emulator).
+Requirements: Node 22, pnpm 12 (`npm i -g pnpm`), Java 21+ (for the Firebase emulators).
 
 ```bash
 pnpm install

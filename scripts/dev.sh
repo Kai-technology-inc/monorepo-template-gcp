@@ -8,7 +8,7 @@
 source "$(dirname "$0")/lib.sh"
 cd "$REPO_ROOT"
 
-require_command java "The Firestore emulator needs Java 17+ (e.g. 'brew install openjdk@17')."
+require_command java "The Firebase emulators need Java 21+ (e.g. 'brew install openjdk@21')."
 
 for app in api web; do
     if [[ ! -f "apps/$app/.env" && -f "apps/$app/.env.example" ]]; then

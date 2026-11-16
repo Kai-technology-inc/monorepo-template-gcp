@@ -88,6 +88,13 @@ step(
     existsSync(join(ROOT, 'PROJECT.md')),
     'Interview the person and get the plan confirmed before creating anything: docs/ONBOARDING.md, phase 1.',
 );
+// `java -version` prints to stderr: 'openjdk version "21.0.4"' (or "1.8.0_x" for Java 8).
+const javaVersion = run('sh', ['-c', 'java -version 2>&1']).out.match(/version "(\d+)(?:\.(\d+))?/);
+const javaMajor = javaVersion
+    ? javaVersion[1] === '1'
+        ? Number(javaVersion[2])
+        : Number(javaVersion[1])
+    : 0;
 const nodeMajor = Number(process.versions.node.split('.')[0]);
 gate(
     'node',
@@ -100,10 +107,10 @@ gate(
 gate('pnpm', 'pnpm 12', 'human', has('pnpm'), 'npm install -g pnpm');
 step(
     'java',
-    'Java 17+ (Firestore emulator)',
+    'Java 21+ (Firebase emulators)',
     'human',
-    run('java', ['-version']).ok,
-    'Install a JDK 17+ (e.g. `brew install openjdk@21`), needed by `pnpm dev`.',
+    javaMajor >= 21,
+    'Install a JDK 21+ (e.g. `brew install openjdk@21`, or https://adoptium.net), needed by `pnpm dev`.',
 );
 gate(
     'dependencies',
