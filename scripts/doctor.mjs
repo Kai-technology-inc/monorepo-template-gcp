@@ -370,7 +370,7 @@ if (ENVIRONMENT) {
         'agent',
         Boolean(
             origin &&
-                authConfig.body?.notification?.sendEmail?.callbackUri === `${origin}/auth/action`,
+            authConfig.body?.notification?.sendEmail?.callbackUri === `${origin}/auth/action`,
         ),
         connectCommand,
     );
