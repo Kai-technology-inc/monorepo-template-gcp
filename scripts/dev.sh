@@ -23,18 +23,35 @@ fi
 log "Building the workspace packages the API and the web depend on"
 pnpm turbo run build --filter='@app/api^...' --filter='@app/web^...' --output-logs=errors-only
 
-pids=()
+# Each background job gets its own process group (`set -m`), so Ctrl-C in the terminal reaches only this script.
+# Otherwise it also reaches the Firestore emulator's JVM, which dies at once, and the export on exit fails: the
+# local users and data would be lost on every restart. cleanup() stops things in order instead.
+set -m
+EMULATORS_PID=""
+app_pids=()
 cleanup() {
+    trap - EXIT INT TERM
     log "Stopping"
-    for pid in ${pids[@]+"${pids[@]}"}; do kill "$pid" 2>/dev/null || true; done
+    for pid in ${app_pids[@]+"${app_pids[@]}"}; do kill -TERM -- "-$pid" 2>/dev/null || true; done
+    if [[ -n "$EMULATORS_PID" ]] && kill -0 "$EMULATORS_PID" 2>/dev/null; then
+        # SIGINT to the firebase CLI only: it exports to .emulator-data/, then stops the emulators itself.
+        kill -INT "$EMULATORS_PID" 2>/dev/null || true
+        for _ in $(seq 1 60); do
+            kill -0 "$EMULATORS_PID" 2>/dev/null || break
+            sleep 1
+        done
+        kill -TERM -- "-$EMULATORS_PID" 2>/dev/null || true
+    fi
     wait 2>/dev/null || true
+    exit 0
 }
 trap cleanup EXIT INT TERM
 
 log "Starting the emulators (state persists in .emulator-data/)"
-pnpm exec firebase emulators:start --only auth,firestore,storage --project demo-template \
+# The bin shim execs node, so this pid is the firebase CLI itself (not a pnpm wrapper that may not forward signals).
+"$REPO_ROOT/node_modules/.bin/firebase" emulators:start --only auth,firestore,storage --project demo-template \
     --import .emulator-data --export-on-exit .emulator-data &
-pids+=($!)
+EMULATORS_PID=$!
 
 # Wait for Firestore before starting the API, so its first request does not fail.
 for _ in $(seq 1 60); do
@@ -44,14 +61,14 @@ done
 
 log "Starting the API on :3100 and the web on :3000"
 pnpm --filter @app/api dev &
-pids+=($!)
+app_pids+=($!)
 pnpm --filter @app/web dev &
-pids+=($!)
+app_pids+=($!)
 
 # Stop everything as soon as one of the three exits (bash 3.2 on macOS has no `wait -n`).
 while true; do
-    for pid in "${pids[@]}"; do
-        kill -0 "$pid" 2>/dev/null || exit 1
+    for pid in "$EMULATORS_PID" "${app_pids[@]}"; do
+        kill -0 "$pid" 2>/dev/null || cleanup
     done
     sleep 2
 done
