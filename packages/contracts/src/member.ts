@@ -12,7 +12,7 @@ export const MemberSchema = z.object({
 });
 export type Member = z.infer<typeof MemberSchema>;
 
-export const UpdateMemberRoleRequestSchema = z.object({ role: WorkspaceRoleSchema }).strict();
+export const UpdateMemberRoleRequestSchema = z.strictObject({ role: WorkspaceRoleSchema });
 export type UpdateMemberRoleRequest = z.infer<typeof UpdateMemberRoleRequestSchema>;
 
 export const MemberListResponseSchema = z.object({ members: z.array(MemberSchema) });

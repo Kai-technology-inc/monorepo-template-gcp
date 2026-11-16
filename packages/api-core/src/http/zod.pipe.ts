@@ -1,5 +1,5 @@
 import { Body, Query, type PipeTransform } from '@nestjs/common';
-import type { ZodType, ZodTypeDef } from 'zod';
+import type { ZodType } from 'zod';
 import { AppError } from './app-error';
 
 /**
@@ -11,7 +11,7 @@ import { AppError } from './app-error';
  *     @Post() create(@ZodBody(CreateWorkspaceRequestSchema) body: CreateWorkspaceRequest) { … }
  */
 export class ZodPipe<T> implements PipeTransform<unknown, T> {
-    constructor(private readonly schema: ZodType<T, ZodTypeDef, unknown>) {}
+    constructor(private readonly schema: ZodType<T, unknown>) {}
 
     transform(value: unknown): T {
         const result = this.schema.safeParse(value ?? {});
@@ -25,8 +25,8 @@ export class ZodPipe<T> implements PipeTransform<unknown, T> {
     }
 }
 
-export const ZodBody = <T>(schema: ZodType<T, ZodTypeDef, unknown>): ParameterDecorator =>
+export const ZodBody = <T>(schema: ZodType<T, unknown>): ParameterDecorator =>
     Body(new ZodPipe(schema));
 
-export const ZodQuery = <T>(schema: ZodType<T, ZodTypeDef, unknown>): ParameterDecorator =>
+export const ZodQuery = <T>(schema: ZodType<T, unknown>): ParameterDecorator =>
     Query(new ZodPipe(schema));

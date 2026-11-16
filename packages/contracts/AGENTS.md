@@ -4,7 +4,7 @@ Layer 0: the shared model. API and web both depend on it; it imports nothing fro
 
 - **One schema, three uses.** A zod schema here is the TypeScript type (`z.infer`), the API's request validation
   (`ZodBody(schema)`) and the web's response parsing (`callApi(..., { schema })`). Never declare the same shape twice.
-- **Requests are `.strict()`**: unknown fields are rejected, so a typo in a client is an error, not silently ignored.
+- **Requests are `z.strictObject()`** (zod 4): unknown fields are rejected, so a typo in a client is an error, not silently ignored.
 - **Timestamps are ISO strings**, ids are Firestore document ids (`IdSchema`).
 - **Permissions, not roles.** Add a capability to `PERMISSIONS` and grant it in `ROLE_PERMISSIONS`; code checks
   permissions only.

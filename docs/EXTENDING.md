@@ -31,7 +31,7 @@ export const ProjectSchema = z.object({
   name: z.string().trim().min(1).max(80),
   createdAt: IsoDateTimeSchema,
 });
-export const CreateProjectRequestSchema = ProjectSchema.pick({ name: true }).strict();
+export const CreateProjectRequestSchema = z.strictObject(ProjectSchema.pick({ name: true }).shape);
 ```
 
 Export it from `src/index.ts`, add the routes to `apiRoutes` (`/workspaces/:workspaceId/projects`), any new

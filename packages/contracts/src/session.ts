@@ -34,14 +34,12 @@ export type Session = z.infer<typeof SessionSchema>;
  * `POST /account/register`, called right after Firebase created the identity. Creates the profile and, unless the
  * person is joining through an invitation, their first workspace.
  */
-export const RegisterRequestSchema = z
-    .object({
-        displayName: DisplayNameSchema,
-        locale: LocaleSchema,
-        workspaceName: WorkspaceNameSchema.optional(),
-    })
-    .strict();
+export const RegisterRequestSchema = z.strictObject({
+    displayName: DisplayNameSchema,
+    locale: LocaleSchema,
+    workspaceName: WorkspaceNameSchema.optional(),
+});
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 
-export const SwitchWorkspaceRequestSchema = z.object({ workspaceId: IdSchema }).strict();
+export const SwitchWorkspaceRequestSchema = z.strictObject({ workspaceId: IdSchema });
 export type SwitchWorkspaceRequest = z.infer<typeof SwitchWorkspaceRequestSchema>;
