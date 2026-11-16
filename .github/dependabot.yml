@@ -7,6 +7,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    ignore:
+      # The Node types follow the runtime (Node 22 on Cloud Functions, App Hosting and CI), not the latest Node:
+      # newer types would accept APIs production does not have. Bump them with the runtime.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       nest:
         patterns: ['@nestjs/*']
