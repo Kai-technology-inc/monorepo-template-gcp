@@ -32,7 +32,7 @@
     },
     "devDependencies": {
         "@app/eslint-config": "workspace:*",
-        "@firebase/rules-unit-testing": "5.0.2",
+        "@firebase/rules-unit-testing": "6.0.0",
         "@jest/globals": "catalog:",
         "@nestjs/testing": "catalog:",
         "@types/jest": "catalog:",
