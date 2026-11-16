@@ -16,12 +16,11 @@ export const UserProfileSchema = z.object({
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 
 export const UpdateProfileRequestSchema = z
-    .object({
+    .strictObject({
         displayName: DisplayNameSchema.optional(),
         locale: LocaleSchema.optional(),
     })
-    .strict()
     .refine((value) => value.displayName !== undefined || value.locale !== undefined, {
-        message: 'Nothing to update',
+        error: 'Nothing to update',
     });
 export type UpdateProfileRequest = z.infer<typeof UpdateProfileRequestSchema>;

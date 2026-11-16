@@ -21,12 +21,13 @@ export const WorkspaceSchema = z.object({
 });
 export type Workspace = z.infer<typeof WorkspaceSchema>;
 
-export const CreateWorkspaceRequestSchema = z
-    .object({ name: WorkspaceNameSchema, slug: WorkspaceSlugSchema.optional() })
-    .strict();
+export const CreateWorkspaceRequestSchema = z.strictObject({
+    name: WorkspaceNameSchema,
+    slug: WorkspaceSlugSchema.optional(),
+});
 export type CreateWorkspaceRequest = z.infer<typeof CreateWorkspaceRequestSchema>;
 
-export const UpdateWorkspaceRequestSchema = z.object({ name: WorkspaceNameSchema }).strict();
+export const UpdateWorkspaceRequestSchema = z.strictObject({ name: WorkspaceNameSchema });
 export type UpdateWorkspaceRequest = z.infer<typeof UpdateWorkspaceRequestSchema>;
 
 /** A slug proposal from a name: `"Acme Inc."` → `"acme-inc"`. The API makes it unique. */

@@ -26,9 +26,10 @@ export const InvitationSchema = z.object({
 });
 export type Invitation = z.infer<typeof InvitationSchema>;
 
-export const CreateInvitationRequestSchema = z
-    .object({ email: EmailSchema, role: InvitableRoleSchema })
-    .strict();
+export const CreateInvitationRequestSchema = z.strictObject({
+    email: EmailSchema,
+    role: InvitableRoleSchema,
+});
 export type CreateInvitationRequest = z.infer<typeof CreateInvitationRequestSchema>;
 
 /**
@@ -44,9 +45,7 @@ export type CreateInvitationResponse = z.infer<typeof CreateInvitationResponseSc
 export const InvitationListResponseSchema = z.object({ invitations: z.array(InvitationSchema) });
 export type InvitationListResponse = z.infer<typeof InvitationListResponseSchema>;
 
-export const AcceptInvitationRequestSchema = z
-    .object({ token: z.string().min(20).max(200) })
-    .strict();
+export const AcceptInvitationRequestSchema = z.strictObject({ token: z.string().min(20).max(200) });
 export type AcceptInvitationRequest = z.infer<typeof AcceptInvitationRequestSchema>;
 
 /** What the accept screen can show before signing in: nothing secret, only what the link already implies. */

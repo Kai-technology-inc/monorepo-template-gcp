@@ -1,4 +1,4 @@
-import type { ZodType, ZodTypeDef } from 'zod';
+import type { ZodType } from 'zod';
 
 /**
  * THE PERSISTENCE PORT
@@ -89,11 +89,7 @@ export abstract class Store implements StoreReader {
 }
 
 /** Parses a stored document with its schema. A document that does not match is a bug or a missing migration. */
-export function parseDocument<T>(
-    schema: ZodType<T, ZodTypeDef, unknown>,
-    data: DocumentData,
-    path: string,
-): T {
+export function parseDocument<T>(schema: ZodType<T, unknown>, data: DocumentData, path: string): T {
     const result = schema.safeParse(data);
     if (!result.success) {
         throw new Error(`Document ${path} does not match its schema: ${result.error.message}`);

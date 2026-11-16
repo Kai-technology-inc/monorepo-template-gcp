@@ -9,7 +9,7 @@ catalog:
   # without the `tsc` binary so it can live next to 7. The `tsc` every script runs is the native 7.x compiler,
   # installed at the root as `tsc7` (its only bin is called `tsc`).
   typescript: 'npm:@typescript/typescript6@6.0.2'
-  zod: '3.25.76'
+  zod: '4.6.7'
   react: '19.3.1'
   react-dom: '19.3.1'
   '@types/react': '19.3.0'
