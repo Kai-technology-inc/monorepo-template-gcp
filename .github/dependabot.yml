@@ -1,17 +1,22 @@
+# Minor and patch updates arrive grouped (one PR per family); a major version arrives alone, because it usually needs
+# code changes and a closer look than "CI is green".
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     groups:
       nest:
         patterns: ['@nestjs/*']
+        update-types: [minor, patch]
       firebase:
         patterns: ['firebase', 'firebase-*', '@firebase/*']
+        update-types: [minor, patch]
       next-react:
         patterns: ['next', 'eslint-config-next', 'react', 'react-dom', '@types/react*']
+        update-types: [minor, patch]
       tooling:
         patterns:
           [
@@ -21,9 +26,11 @@ updates:
             'prettier',
             'jest',
             'ts-jest',
+            '@types/jest',
             'vitest',
             'turbo',
           ]
+        update-types: [minor, patch]
   - package-ecosystem: github-actions
     directory: /
     schedule:

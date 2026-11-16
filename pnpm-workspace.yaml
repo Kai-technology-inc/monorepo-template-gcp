@@ -32,7 +32,6 @@ catalog:
   eslint-config-next: '16.4.6'
   firebase: '12.19.0'
   vitest: '4.1.11'
-  jsdom: '29.1.1'
   '@nestjs/common': '11.1.28'
   '@nestjs/core': '11.1.28'
   '@nestjs/platform-express': '11.1.28'
