@@ -1,7 +1,7 @@
 {
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "types": ["node", "jest"],
+        "types": ["node"],
         "module": "commonjs",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
@@ -11,7 +11,7 @@
         "strictPropertyInitialization": false,
         // Comments travel to the `.d.ts`, so whoever imports a service reads its docblock in the editor.
         "removeComments": false,
-        // ts-jest transpiles each file on its own; `tsc --noEmit` is what type-checks.
+        // Vitest transpiles each file on its own; `tsc --noEmit` is what type-checks.
         "isolatedModules": true
     },
     "include": ["src/**/*"],

@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { AppError } from './app-error';
 import { ZodPipe } from './zod.pipe';

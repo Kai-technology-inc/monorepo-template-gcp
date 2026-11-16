@@ -18,18 +18,7 @@ updates:
         patterns: ['next', 'eslint-config-next', 'react', 'react-dom', '@types/react*']
         update-types: [minor, patch]
       tooling:
-        patterns:
-          [
-            'eslint*',
-            '@eslint/*',
-            'typescript-eslint',
-            'prettier',
-            'jest',
-            'ts-jest',
-            '@types/jest',
-            'vitest',
-            'turbo',
-          ]
+        patterns: ['eslint*', '@eslint/*', 'typescript-eslint', 'prettier', 'vitest', 'turbo']
         update-types: [minor, patch]
   - package-ecosystem: github-actions
     directory: /

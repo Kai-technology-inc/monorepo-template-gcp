@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { Identity } from '@app/api-core/auth/auth-context';
 import { identity } from '@app/api-core/testing/identities';
 import { createKit } from '../testing/workspace-kit';

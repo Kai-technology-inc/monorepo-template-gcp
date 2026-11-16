@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it, vi } from 'vitest';
 import { ArgumentsHost, Logger, NotFoundException } from '@nestjs/common';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 import { AppError } from './app-error';
@@ -44,7 +44,7 @@ describe('AllExceptionsFilter', () => {
     });
 
     it('hides the message of an unexpected error', () => {
-        jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+        vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
         expect(run(new Error('password=hunter2'))).toEqual({
             status: 500,
             body: {

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { CreateInvitationResponse, MemberListResponse, Session } from '@app/contracts';
@@ -118,7 +118,7 @@ describe('API over HTTP', () => {
             }),
         ).toMatchObject({
             status: 400,
-            body: { code: 'VALIDATION_FAILED', issues: { _: expect.any(Array) } },
+            body: { code: 'VALIDATION_FAILED', issues: { _: expect.any(Array) as unknown } },
         });
 
         const created = await call<CreateInvitationResponse>(

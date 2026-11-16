@@ -1,8 +1,0 @@
-/** Each file is transpiled on its own (`isolatedModules`); types are checked by `tsc --noEmit`. */
-module.exports = {
-    moduleFileExtensions: ['js', 'json', 'ts'],
-    rootDir: 'src',
-    testRegex: '.*\\.spec\\.ts$',
-    transform: { '^.+\\.ts$': ['ts-jest', { tsconfig: '<rootDir>/../tsconfig.json' }] },
-    testEnvironment: 'node',
-};

@@ -21,7 +21,7 @@
         "build": "tsc -b tsconfig.build.json",
         "typecheck": "tsc --noEmit -p tsconfig.json",
         "lint": "eslint src",
-        "test": "jest",
+        "test": "vitest run",
         "format": "prettier --write \"src/**/*.ts\""
     },
     "dependencies": {
@@ -30,12 +30,9 @@
     },
     "devDependencies": {
         "@app/eslint-config": "workspace:*",
-        "@jest/globals": "catalog:",
-        "@types/jest": "catalog:",
         "@types/node": "catalog:",
         "eslint": "catalog:",
-        "jest": "catalog:",
         "prettier": "catalog:",
-        "ts-jest": "catalog:"
+        "vitest": "catalog:"
     }
 }

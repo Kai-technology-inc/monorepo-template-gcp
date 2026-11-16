@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import { hasPermission, PERMISSIONS, ROLE_PERMISSIONS } from './roles';
 
 describe('roles', () => {

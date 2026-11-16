@@ -100,6 +100,10 @@ const result = await build({
     metafile: true,
     logLevel: 'warning',
     plugins: [externals],
+    // NestJS (12+) ships as ESM and calls `createRequire(import.meta.url)`; in a CommonJS bundle `import.meta` is
+    // empty, so it points at the bundle file instead (what it requires through it resolves from its node_modules).
+    define: { 'import.meta.url': '__bundleFileUrl' },
+    banner: { js: "const __bundleFileUrl = require('node:url').pathToFileURL(__filename).href;" },
 });
 
 /** The installed version of a package, read from its package.json by path (not every package exports it). */

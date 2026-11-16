@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import { Timestamp } from 'firebase-admin/firestore';
 import { fromFirestore, toFirestore } from './timestamps';
 
