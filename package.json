@@ -36,7 +36,7 @@
         "typescript": "catalog:"
     },
     "devDependencies": {
-        "firebase-tools": "15.36.0",
+        "firebase-tools": "15.37.0",
         "prettier": "catalog:"
     }
 }
