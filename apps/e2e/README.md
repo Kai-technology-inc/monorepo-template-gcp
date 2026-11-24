@@ -56,5 +56,5 @@ uploaded as the `playwright-report` artifact.
 ## In CI
 
 The `Browser behavior tests` job of `.github/workflows/pr-checks.yml` runs the same command on every pull request
-and on `main`: Java 21, `playwright install --with-deps chromium`, `pnpm test:e2e` (about five minutes). Make it a
+and on `main`: Java 21, `playwright install --with-deps chromium`, `pnpm test:e2e` (about two minutes). Make it a
 required check in the branch protection of `main` once it has proven stable for your team.
