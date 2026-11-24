@@ -8,10 +8,13 @@ apps/
   api/              The local API server (NestJS on Express), the AppModule, the architecture specs and the
                     Firestore/Storage rules with their tests.
   functions/        The Cloud Functions entry: one HTTP Function per API area (`account`, `workspaces`).
+  e2e/              Browser behavior tests (Playwright) against emulators + API + web on their own ports.
 packages/
-  contracts/        Layer 0. zod schemas and types shared by API and web: identity, workspaces, roles, errors, routes.
+  contracts/        Layer 0. zod schemas and types shared by API and web: identity, workspaces, roles, errors, routes,
+                    and the declared feature flags.
   i18n/             The language module: typed dictionaries, translator, Intl formatters, React bindings.
-  api-core/         Layer 1 of the API: Firebase Admin, the auth guard and decorators, persistence, config, errors.
+  api-core/         Layer 1 of the API: Firebase Admin, the auth guard and decorators, persistence, config, errors,
+                    and the feature-flags port with its adapters (Firestore, LaunchDarkly, Remote Config, memory).
   api-workspace/    Layer 2: accounts, workspaces, members, invitations, health.
   api-host/         How a Nest app becomes a Cloud Function: bootstrap per Function, prefix stripping, CORS, options.
   web-kit/          Web primitives: design tokens, UI components, Firebase client, HTTP client, AuthContext.
@@ -62,6 +65,10 @@ Web and API never import each other: they meet in the contracts, over HTTP.
    transaction when more than one document must change together.
 6. The response is a contract type. Errors are `ApiErrorBody` with a `code`; the web translates it.
 
+Feature flags follow the same path: the API evaluates them (`FlagsProvider`, `FLAGS_PROVIDER` picks the adapter) and
+sends their values in the session; the web reads them with `useFlag(key)` and never talks to a flags provider
+(`docs/FLAGS.md`).
+
 ## Multi-tenancy
 
 A **workspace** is a tenant. A person (Firebase identity + `users/{uid}`) can belong to many workspaces with a role
@@ -101,3 +108,7 @@ Separate projects per environment mean separate Auth users, data and IAM: a QA m
   Firebase project as the API.
 - **Architecture specs.** Conventions written only in documents erode. Every rule here that can be checked by a test
   is.
+- **Flags behind a port.** Which flags tool a product uses is a business decision that changes; the code depends on
+  `FlagsProvider` and one shared spec every adapter passes, so switching is configuration, not a rewrite.
+- **Behavior tests in a browser.** Unit specs prove the rules and the API e2e the wiring; only a browser proves that
+  what a person does sends the right request and shows the right result (`apps/e2e`).
