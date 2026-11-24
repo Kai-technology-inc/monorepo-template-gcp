@@ -91,6 +91,27 @@ describe('AccountService', () => {
         expect(bob.userId).toBe('bob');
     });
 
+    it('carries the flags evaluated for the person in the active workspace', async () => {
+        const kit = createKit();
+        const { who, session } = await kit.register('ada', 'Acme');
+        const acme = session.workspace?.id as string;
+        expect(session.flags).toEqual({ 'dashboard-whats-new': false });
+        await kit.flags.writeRule(
+            'dashboard-whats-new',
+            {
+                enabled: true,
+                value: true,
+                percent: 0,
+                bucketBy: 'user',
+                allowList: { userIds: [], workspaceIds: [acme] },
+            },
+            'ada',
+        );
+        expect((await kit.sessions.build(who)).flags['dashboard-whats-new']).toBe(true);
+        const elsewhere = await kit.workspaces.create(await kit.auth(who), { name: 'Second' });
+        expect(elsewhere.flags['dashboard-whats-new']).toBe(false);
+    });
+
     it('reports emailVerified from the identity', async () => {
         const kit = createKit();
         await kit.register('ada', 'Acme');

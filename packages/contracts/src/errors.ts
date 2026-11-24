@@ -25,6 +25,8 @@ export const ERROR_CODES = [
     'INVITATION_EXPIRED',
     'INVITATION_EMAIL_MISMATCH',
     'RATE_LIMITED',
+    /** The flags are operated in another provider's console (LaunchDarkly, Remote Config), not through this API. */
+    'FLAGS_MANAGED_ELSEWHERE',
     'INTERNAL',
 ] as const;
 export const ErrorCodeSchema = z.enum(ERROR_CODES);

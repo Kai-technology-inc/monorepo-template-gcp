@@ -58,12 +58,38 @@ permission to `PERMISSIONS`/`ROLE_PERMISSIONS`, and any new error code to `ERROR
 - Every text through `t()`: add the keys to `en.ts` and every other dictionary in `packages/i18n/src/messages/`.
   The compiler tells you which ones are missing.
 - Add the nav entry in the app shell.
+- **A user-visible change ships behind a flag**: declare it in `FLAGS` (`packages/contracts/src/flags.ts`), read it
+  with `useFlag('projects-list')` in the screen (or `flags.evaluate(…)` in the API), and remove it once it is fully
+  rolled out. Deploying is not releasing: `docs/FLAGS.md`.
 
-## 5. Verify
+## 5. Behavior test
+
+**A change with a screen ships with a behavior test: what the person does and what the web sends to the API.** One
+spec in `apps/e2e/src/` per flow, written like the existing ones (`apps/e2e/README.md`):
+
+```ts
+test('creating a project sends its name and lists it', async ({ page }) => {
+  const { session } = await registerThroughTheScreen(page, newPerson('Ada'));
+  const workspaceId = session.workspace?.id ?? '';
+  await page.getByRole('link', { name: t('nav.projects') }).click();
+  await page.getByLabel(t('projects.new.name'), { exact: true }).fill('Apollo');
+  const creating = page.waitForRequest(toApi('POST', apiRoutes.projects.list(workspaceId)));
+  await page.getByRole('button', { name: t('projects.new.submit') }).click();
+  const request = await creating;
+  expect(request.postDataJSON()).toEqual({ name: 'Apollo' }); // what the web sends
+  expect((await request.response())?.status()).toBe(201);
+  await expect(page.getByRole('cell', { name: 'Apollo' })).toBeVisible(); // what the person sees
+});
+```
+
+If the change is behind a flag, test both branches: flip it with the admin route (`apps/e2e/src/flags.spec.ts`).
+
+## 6. Verify
 
 ```bash
 pnpm check:changed
-pnpm dev     # and click through it
+pnpm test:e2e   # the behavior tests, on their own stack
+pnpm dev        # and click through it
 ```
 
 ## Common additions

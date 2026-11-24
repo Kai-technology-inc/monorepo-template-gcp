@@ -52,7 +52,9 @@ The web reads it from `NEXT_PUBLIC_API_BASE_URL`.
   `workspaceName` it also creates the first workspace (caller is `OWNER`) and makes it active. Without it (someone
   joining through an invitation) `activeWorkspaceId` is `null`.
 - `session` returns the profile, the active workspace, the caller's role and permissions there, every membership,
-  `emailVerified` and `emailVerificationRequired`.
+  `emailVerified`, `emailVerificationRequired`, and `flags`: every declared feature flag evaluated for the caller in
+  the active workspace (see "Feature flags" below). Every route that answers a `Session` re-evaluates them, so
+  switching workspace switches the flags too.
 
 ## Workspaces (`workspaces` function)
 
@@ -85,6 +87,44 @@ Rules worth knowing:
   invitation `ACCEPTED` and makes the workspace active, all in one transaction. Expired = `expiresAt` in the past
   (`INVITATION_TTL_DAYS`). The template does not send email: plug a provider in `InvitationsService`.
 
+## Feature flags (`workspaces` function)
+
+Flags are declared in `FLAGS` (`packages/contracts/src/flags.ts`) and evaluated by the API with the provider in
+`FLAGS_PROVIDER`; the web only receives their values, in the session. These routes operate the **own provider**
+(`FLAGS_PROVIDER=firestore`, the default). The whole story, providers and rollout practice: `docs/FLAGS.md`.
+
+| Method | Path                                      | Permission     | Body                 | Response           | Errors                                                                         |
+| ------ | ----------------------------------------- | -------------- | -------------------- | ------------------ | ------------------------------------------------------------------------------ |
+| GET    | `/workspaces/:workspaceId/flags`          | `flags:manage` | —                    | `FlagListResponse` | `403 FORBIDDEN`, `409 FLAGS_MANAGED_ELSEWHERE`                                 |
+| GET    | `/workspaces/:workspaceId/flags/:flagKey` | `flags:manage` | —                    | `FlagState`        | `403 FORBIDDEN`, `404 NOT_FOUND`, `409 FLAGS_MANAGED_ELSEWHERE`                |
+| PUT    | `/workspaces/:workspaceId/flags/:flagKey` | `flags:manage` | `SetFlagRuleRequest` | `FlagState`        | `400 VALIDATION_FAILED`, `403`, `404 NOT_FOUND`, `409 FLAGS_MANAGED_ELSEWHERE` |
+| DELETE | `/workspaces/:workspaceId/flags/:flagKey` | `flags:manage` | —                    | `204`              | `403 FORBIDDEN`, `404 NOT_FOUND`, `409 FLAGS_MANAGED_ELSEWHERE`                |
+
+- **Who.** Owners and admins (`flags:manage`) of **the operator workspace**: the one whose id is in
+  `FLAGS_ADMIN_WORKSPACE_ID`. Flags are global to the deployment, so any other workspace (any customer's) answers
+  `403 FORBIDDEN`, and so does every workspace when the variable is unset. `*` means "any workspace" and is honored
+  only with `APP_ENVIRONMENT=local` (the emulators and the browser tests use it).
+- **Which provider.** With `launchdarkly` or `remote-config` these routes answer `409 FLAGS_MANAGED_ELSEWHERE`:
+  those flags are operated from that vendor's console or API.
+- **List / read** (`FlagState`): the declaration (`key`, `type`, `description`, `addedOn`, `defaultValue`) and the
+  stored `rule`, `null` when nobody set one (everyone gets the default), with `updatedAt` and `updatedBy`. Always read
+  fresh, never from the cache.
+- **Set who gets it** (`PUT`, `SetFlagRuleRequest`): `value` is required and must match the flag's schema (`400`
+  with `issues.value` otherwise). `enabled` (default `true`), `percent` (0–100, default `0`), `bucketBy`
+  (`user` | `workspace`, default `user`) and `allowList` (`userIds`, `workspaceIds`, default empty). Evaluation:
+  disabled → default; allow-listed user or workspace → `value`; stable bucket under `percent` → `value`; anyone else
+  → default.
+
+  ```json
+  { "value": true, "allowList": { "workspaceIds": ["<your team's workspace>"] } }   // the team
+  { "value": true, "percent": 10, "allowList": { "workspaceIds": ["<…>"] } }         // + 10% of people
+  { "value": true, "percent": 100 }                                                  // everyone
+  { "value": true, "percent": 100, "enabled": false }                                // paused, targeting kept
+  ```
+
+- **Turn it off** (`DELETE`): the kill switch. The rule is removed and everyone gets the declared default.
+- A change takes effect at once on the instance that made it and within `FLAGS_CACHE_SECONDS` on the others.
+
 ## Firestore layout
 
 ```text
@@ -93,7 +133,9 @@ workspaces/{workspaceId}                         Workspace
 workspaces/{workspaceId}/members/{userId}        Member  (+ workspaceId, for the collection-group query)
 workspaces/{workspaceId}/invitations/{id}        Invitation (+ tokenHash, acceptedBy, acceptedAt)
 workspaceSlugs/{slug}                            { workspaceId }
+flags/{flagKey}                                  FlagRule (value as valueJson), updatedAt, updatedBy  (own provider)
 ```
 
 The client SDK never writes: `firestore.rules` denies every write and only lets a signed-in person read their own
-`users/{uid}` and the workspaces (and members) they belong to. All writes go through the API with the Admin SDK.
+`users/{uid}` and the workspaces (and members) they belong to; `flags` is not readable either. All writes go
+through the API with the Admin SDK.

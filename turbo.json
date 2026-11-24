@@ -26,6 +26,11 @@
             "dependsOn": ["build"],
             "cache": false,
             "outputs": [".functions/index.js", ".functions/index.js.map", ".functions/package.json"]
+        },
+        "test:e2e": {
+            "dependsOn": ["^build", "@app/api#build"],
+            "cache": false,
+            "passThroughEnv": ["JAVA_HOME", "E2E_*", "PLAYWRIGHT_*"]
         }
     }
 }

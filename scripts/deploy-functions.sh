@@ -6,7 +6,8 @@
 #
 # Reads: ALLOWED_ORIGINS (required: the web's origin, e.g. https://my-app-qa--my-app-qa.us-central1.hosted.app),
 # FUNCTIONS_REGION (default us-central1), FUNCTIONS_MAX_INSTANCES (default 10),
-# AUTH_REQUIRE_VERIFIED_EMAIL (default true).
+# AUTH_REQUIRE_VERIFIED_EMAIL (default true), FLAGS_PROVIDER (default firestore), FLAGS_ADMIN_WORKSPACE_ID
+# (default none: nobody operates flags through the API) and FLAGS_CACHE_SECONDS (default 15). docs/FLAGS.md.
 # Auth: in CI, Workload Identity Federation (GOOGLE_APPLICATION_CREDENTIALS set by google-github-actions/auth);
 # locally, your `firebase login` session.
 source "$(dirname "$0")/lib.sh"
@@ -28,7 +29,13 @@ ALLOWED_ORIGINS=$ALLOWED_ORIGINS
 AUTH_REQUIRE_VERIFIED_EMAIL=${AUTH_REQUIRE_VERIFIED_EMAIL:-true}
 FUNCTIONS_REGION=${FUNCTIONS_REGION:-us-central1}
 FUNCTIONS_MAX_INSTANCES=${FUNCTIONS_MAX_INSTANCES:-10}
+FLAGS_PROVIDER=${FLAGS_PROVIDER:-firestore}
+FLAGS_CACHE_SECONDS=${FLAGS_CACHE_SECONDS:-15}
 ENV
+# Only when set: without it, nobody operates the flags through the API (docs/FLAGS.md).
+if [[ -n "${FLAGS_ADMIN_WORKSPACE_ID:-}" ]]; then
+    printf 'FLAGS_ADMIN_WORKSPACE_ID=%s\n' "$FLAGS_ADMIN_WORKSPACE_ID" >> apps/functions/.functions/.env
+fi
 ok "Wrote apps/functions/.functions/.env"
 
 pnpm exec firebase deploy \

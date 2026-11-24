@@ -21,6 +21,8 @@ export const PERMISSIONS = [
     'members:read',
     'members:manage',
     'invitations:manage',
+    /** Operate feature flags (own provider), only from the workspace named in `FLAGS_ADMIN_WORKSPACE_ID`. */
+    'flags:manage',
 ] as const;
 export const PermissionSchema = z.enum(PERMISSIONS);
 export type Permission = z.infer<typeof PermissionSchema>;
@@ -33,6 +35,7 @@ export const ROLE_PERMISSIONS: Readonly<Record<WorkspaceRole, readonly Permissio
         'members:read',
         'members:manage',
         'invitations:manage',
+        'flags:manage',
     ],
     MEMBER: ['workspace:read', 'members:read'],
 };

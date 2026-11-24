@@ -6,3 +6,6 @@ dist
 .emulator-data
 pnpm-lock.yaml
 coverage
+test-results
+playwright-report
+blob-report

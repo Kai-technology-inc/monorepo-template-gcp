@@ -41,6 +41,7 @@ describe('firestore.rules', () => {
             await setDoc(doc(db, 'workspaces/w1/members/ada'), { role: 'OWNER' });
             await setDoc(doc(db, 'workspaces/w1/invitations/i1'), { tokenHash: 'x' });
             await setDoc(doc(db, 'workspaceSlugs/acme'), { workspaceId: 'w1' });
+            await setDoc(doc(db, 'flags/dashboard-whats-new'), { enabled: true, percent: 100 });
         });
     });
 
@@ -63,6 +64,13 @@ describe('firestore.rules', () => {
     it('never exposes invitations or slugs', async () => {
         await assertFails(getDoc(doc(as('ada'), 'workspaces/w1/invitations/i1')));
         await assertFails(getDoc(doc(as('ada'), 'workspaceSlugs/acme')));
+    });
+
+    it('never lets the client read or write feature-flag rules', async () => {
+        await assertFails(getDoc(doc(as('ada'), 'flags/dashboard-whats-new')));
+        await assertFails(getDoc(doc(as(), 'flags/dashboard-whats-new')));
+        await assertFails(setDoc(doc(as('ada'), 'flags/dashboard-whats-new'), { percent: 100 }));
+        await assertFails(setDoc(doc(as('ada'), 'flags/new-flag'), { enabled: true }));
     });
 
     it('denies every write from the client', async () => {

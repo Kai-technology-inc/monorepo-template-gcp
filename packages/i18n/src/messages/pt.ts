@@ -144,6 +144,10 @@ export const pt: Messages = {
             language: 'Mude seu idioma em <link>Configurações</link>.',
             build: 'Adicione seu primeiro módulo: veja docs/EXTENDING.md.',
         },
+        whatsNew: {
+            title: 'Novidades',
+            body: 'As mudanças agora são publicadas desligadas e ligadas para sua equipe, uma porcentagem de pessoas ou todos, sem um novo deploy. Este cartão é o exemplo: veja docs/FLAGS.md.',
+        },
     },
     members: {
         title: 'Membros',
@@ -238,6 +242,7 @@ export const pt: Messages = {
         INVITATION_EXPIRED: 'Este convite expirou. Peça um novo.',
         INVITATION_EMAIL_MISMATCH: 'Este convite foi enviado para outro e-mail.',
         RATE_LIMITED: 'Muitas solicitações. Aguarde um momento e tente de novo.',
+        FLAGS_MANAGED_ELSEWHERE: 'Essas flags são gerenciadas em outra ferramenta, não aqui.',
         INTERNAL: 'Algo deu errado do nosso lado. Tente de novo.',
         network: 'Não conseguimos conectar ao servidor. Verifique sua conexão.',
         unknown: 'Algo deu errado. Tente de novo.',

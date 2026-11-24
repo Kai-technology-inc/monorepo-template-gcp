@@ -9,7 +9,10 @@ first commit you write is your own feature.
 - **Shared contracts**: zod schemas used by both sides for types, request validation and response parsing.
 - **Multi-tenant**: an account can belong to many workspaces with `OWNER`/`ADMIN`/`MEMBER` roles and permissions.
 - **i18n**: typed dictionaries (English, Spanish, Portuguese), plurals, Intl formatting, no hardcoded UI text.
-- **Guardrails**: pnpm + Turborepo, strict TypeScript, ESLint layer rules, architecture tests, Firestore rules tests.
+- **Guardrails**: pnpm + Turborepo, strict TypeScript, ESLint layer rules, architecture tests, Firestore rules tests,
+  browser behavior tests (Playwright).
+- **Feature flags**: deploying is not releasing. Flags declared in the contracts, evaluated in the API behind a port
+  with interchangeable providers (own Firestore implementation by default, LaunchDarkly, Remote Config).
 - **CI/CD**: GitHub Actions with Workload Identity Federation (no keys): `rc*` tags deploy to QA, releases to prod.
 - **Agent-ready**: `AGENTS.md` index + per-package guides, written to be loaded by coding agents.
 
@@ -49,6 +52,7 @@ apps/
   web/            Next.js app (routes only; screens live in packages)
   api/            Local API server, architecture specs, Firestore/Storage rules + tests
   functions/      Cloud Functions entry point
+  e2e/            Browser behavior tests (Playwright) on their own local stack
 packages/
   contracts/      zod schemas: identity, workspaces, roles, errors, routes, locales
   i18n/           dictionaries, translator, formatters, React bindings
@@ -69,6 +73,7 @@ pnpm dev                 # emulators + API + web
 pnpm check:changed       # typecheck, lint, tests, architecture — only what changed vs origin/main
 pnpm check               # everything
 pnpm test:rules          # Firestore rules against the emulator
+pnpm test:e2e            # browser behavior tests: what a person does and what the web sends to the API
 pnpm functions:emulate   # the real Functions bundle in the emulator
 pnpm create-version      # cut a release candidate (tag rcX.Y.Z → deploys QA)
 pnpm doctor [qa|prod]    # setup status and the next step

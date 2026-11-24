@@ -1,5 +1,6 @@
 export * from './api-routes';
 export * from './errors';
+export * from './flags';
 export * from './invitation';
 export * from './locale';
 export * from './member';

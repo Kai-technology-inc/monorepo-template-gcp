@@ -70,6 +70,59 @@ export function readNumber(
     return Number.isFinite(value) ? value : fallback;
 }
 
+/**
+ * Who evaluates feature flags (`FLAGS_PROVIDER`, docs/FLAGS.md): `firestore` (default), `launchdarkly`,
+ * `remote-config` or `memory`. Firestore is the default because a bare template must work with the emulators and
+ * without anyone's account. The adapter registry (`flags/providers.ts`) refuses an unknown name at boot.
+ */
+export function readFlagsProviderName(env: NodeJS.ProcessEnv = process.env): string {
+    return env.FLAGS_PROVIDER?.trim().toLowerCase() || 'firestore';
+}
+
+/**
+ * How long the API keeps flag rules in memory before reading them again (`FLAGS_CACHE_SECONDS`, default 15): the
+ * Firestore provider's rules and Remote Config's template. Changing a flag reaches every instance within this time
+ * (immediately on the instance that changed it). LaunchDarkly streams its changes and ignores it.
+ */
+export function readFlagsCacheMs(env: NodeJS.ProcessEnv = process.env): number {
+    return Math.max(0, readNumber('FLAGS_CACHE_SECONDS', 15, env)) * 1000;
+}
+
+/**
+ * How long one flag evaluation may take before the declared default is served instead (`FLAGS_TIMEOUT_MS`, default
+ * 1000). A slow or unreachable provider must cost a request at most this, never fail it.
+ */
+export function readFlagsTimeoutMs(env: NodeJS.ProcessEnv = process.env): number {
+    return Math.max(1, readNumber('FLAGS_TIMEOUT_MS', 1000, env));
+}
+
+/**
+ * The workspace whose owners and admins operate the flags of the own provider (`FLAGS_ADMIN_WORKSPACE_ID`): flags
+ * are global to the deployment, so the owner of any other workspace (any customer) must not be able to flip them.
+ * Unset means nobody (the admin routes answer `403`). `*` means any workspace, and is honored only in `local`, where
+ * it makes the emulators and the browser tests easy; elsewhere it counts as unset.
+ */
+export function canOperateFlagsFrom(
+    workspaceId: string,
+    env: NodeJS.ProcessEnv = process.env,
+): boolean {
+    const configured = env.FLAGS_ADMIN_WORKSPACE_ID?.trim();
+    if (!configured) return false;
+    if (configured === '*') return readEnvironment(env) === 'local';
+    return configured === workspaceId;
+}
+
+/** The LaunchDarkly server-side SDK key: a secret (Secret Manager), needed only with `FLAGS_PROVIDER=launchdarkly`. */
+export function readLaunchDarklySdkKey(env: NodeJS.ProcessEnv = process.env): string {
+    const key = env.LAUNCHDARKLY_SDK_KEY?.trim();
+    if (!key) {
+        throw new Error(
+            'FLAGS_PROVIDER=launchdarkly needs LAUNCHDARKLY_SDK_KEY (a Secret Manager secret, docs/FLAGS.md).',
+        );
+    }
+    return key;
+}
+
 /** The local server's port. Deployed, Cloud Functions decides. */
 export function readPort(env: NodeJS.ProcessEnv = process.env): number {
     return readNumber('PORT', 3100, env);

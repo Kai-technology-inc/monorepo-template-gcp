@@ -13,6 +13,8 @@ needs explaining goes in the document the line points to. Each package has its o
 | understand the layers and why they exist                 | `docs/ARCHITECTURE.md`                                                                |
 | add a feature or a whole module (contract → API → web)   | `docs/EXTENDING.md`                                                                   |
 | add or change an endpoint                                | `docs/API.md` (keep it in sync), `packages/api-workspace/README.md`                   |
+| put a user-visible change behind a flag, roll it out     | `docs/FLAGS.md`                                                                       |
+| write or run browser behavior tests                      | `apps/e2e/README.md`                                                                  |
 | touch auth, sessions, persistence, config or errors      | `packages/api-core/README.md`                                                         |
 | touch how Functions are hosted (options, CORS, prefixes) | `packages/api-host/README.md`, `apps/functions/src/index.ts`                          |
 | add UI text, a language, or format dates/numbers         | `docs/I18N.md`                                                                        |
@@ -33,6 +35,10 @@ needs explaining goes in the document the line points to. Each package has its o
 - **Contracts are the source of truth.** Request and response shapes are zod schemas in `@app/contracts`; the API
   validates bodies with them and the web parses responses with them.
 - **The client never writes to Firestore.** Rules deny all writes; the API writes with the Admin SDK.
+- **A user-visible change ships behind a flag** declared in the contracts; remove the flag once it is fully rolled
+  out (`docs/FLAGS.md`).
+- **A change with a screen ships with a behavior test**: what the person does and what the web sends to the API
+  (`apps/e2e`, `pnpm test:e2e`).
 
 ## Tools
 
@@ -53,6 +59,7 @@ needs explaining goes in the document the line points to. Each package has its o
 pnpm install
 pnpm dev          # emulators + API (:3100) + web (:3000). No GCP account needed.
 pnpm check        # every gate
+pnpm test:e2e     # browser behavior tests on their own stack (Java 21+; `pnpm --filter @app/e2e browsers` once)
 ```
 
 ## Deploy

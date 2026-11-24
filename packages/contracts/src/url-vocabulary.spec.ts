@@ -24,6 +24,8 @@ describe('url vocabulary', () => {
             apiRoutes.account.activeWorkspace(),
             apiRoutes.workspaces.members('w1'),
             apiRoutes.workspaces.acceptInvitation('w1', 'i1'),
+            apiRoutes.workspaces.flags('w1'),
+            apiRoutes.workspaces.flag('w1', 'dashboard-whats-new'),
         ];
         for (const path of paths) expect(invalidApiSegments(path)).toEqual([]);
     });

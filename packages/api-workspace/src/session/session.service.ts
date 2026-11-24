@@ -9,6 +9,7 @@ import {
 import type { Identity } from '@app/api-core/auth/auth-context';
 import { SessionResolver } from '@app/api-core/auth/session-resolver';
 import { requiresVerifiedEmail } from '@app/api-core/config/environment';
+import { FlagsProvider } from '@app/api-core/flags/flags-provider';
 import { AppError } from '@app/api-core/http/app-error';
 import { MEMBERS_COLLECTION, paths } from '@app/api-core/persistence/paths';
 import { parseDocument, Store, where } from '@app/api-core/persistence/store';
@@ -16,13 +17,16 @@ import { MemberRecordSchema } from '../records';
 
 /**
  * `Session`: what the web needs after sign-in, in one response. Every endpoint that changes what the shell shows
- * (register, switch, create, accept) answers with a fresh one, so the web never has to guess what changed.
+ * (register, switch, create, accept) answers with a fresh one, so the web never has to guess what changed. That
+ * includes the feature flags, evaluated here for the person in their active workspace: switching workspace
+ * re-evaluates them, and no provider SDK or key ever reaches the browser.
  */
 @Injectable()
 export class SessionService {
     constructor(
         private readonly store: Store,
         private readonly sessions: SessionResolver,
+        private readonly flags: FlagsProvider,
     ) {}
 
     async build(identity: Identity): Promise<Session> {
@@ -61,6 +65,11 @@ export class SessionService {
 
         const active = user.activeWorkspaceId ? workspaces.get(user.activeWorkspaceId) : undefined;
         const role = memberships.find((m) => m.workspaceId === active?.id)?.role ?? null;
+        const flags = await this.flags.evaluateAll({
+            userId: user.id,
+            workspaceId: active?.id ?? null,
+            attributes: { locale: user.locale, ...(role ? { role } : {}) },
+        });
         return {
             user,
             workspace: active ?? null,
@@ -69,6 +78,7 @@ export class SessionService {
             memberships,
             emailVerified: identity.emailVerified,
             emailVerificationRequired: requiresVerifiedEmail(),
+            flags,
         };
     }
 }

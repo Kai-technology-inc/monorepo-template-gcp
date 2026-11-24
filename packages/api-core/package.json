@@ -1,7 +1,7 @@
 {
     "name": "@app/api-core",
     "version": "0.1.0",
-    "description": "Layer 1 of the API: configuration, Firebase Admin, authentication and session resolution, HTTP errors and validation, and the persistence Store. No product module lives here.",
+    "description": "Layer 1 of the API: configuration, Firebase Admin, authentication and session resolution, HTTP errors and validation, the persistence Store and the feature-flags port with its adapters. No product module lives here.",
     "private": true,
     "license": "MIT",
     "engines": {
@@ -34,6 +34,7 @@
     },
     "dependencies": {
         "@app/contracts": "workspace:*",
+        "@launchdarkly/node-server-sdk": "catalog:",
         "@nestjs/common": "catalog:",
         "@nestjs/core": "catalog:",
         "express": "catalog:",

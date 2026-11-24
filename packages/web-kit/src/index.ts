@@ -12,6 +12,7 @@ export {
     type AuthStatus,
     type RegisterInput,
 } from './context/AuthContext';
+export { sessionFlag, useFlag } from './context/flags';
 export {
     ApiError,
     apiErrorFromResponse,

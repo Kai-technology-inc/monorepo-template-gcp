@@ -17,6 +17,7 @@ import { REPO_ROOT, sourceFiles, workspaceImports, workspacePackages } from './r
  *   api, functions       → api-*, contracts              the deployables
  *   web-kit              → contracts, i18n               the web's primitives
  *   web-*, web           → contracts, i18n, web-*        never the API packages: they talk to it over HTTP
+ *   e2e                  → contracts, i18n               drives the web in a browser and talks to the API over HTTP
  */
 const API_PACKAGES = ['@app/api-core', '@app/api-workspace', '@app/api-host'];
 
@@ -30,6 +31,7 @@ const ALLOWED: Readonly<Record<string, readonly string[]>> = {
     '@app/api': [...API_PACKAGES, '@app/contracts'],
     '@app/functions': [...API_PACKAGES, '@app/contracts'],
     '@app/web-kit': ['@app/contracts', '@app/i18n'],
+    '@app/e2e': ['@app/contracts', '@app/i18n'],
 };
 
 /** Web packages added later (`web-billing`…) follow the web rule without being listed one by one. */

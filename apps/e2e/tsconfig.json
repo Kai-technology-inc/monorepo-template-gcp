@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.base.json",
+    // Only type-checked: Playwright runs the TypeScript itself.
+    "compilerOptions": {
+        "types": ["node"],
+        "lib": ["dom", "esnext"],
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "isolatedModules": true,
+        "resolveJsonModule": true
+    },
+    "include": ["src/**/*", "playwright.config.ts"],
+    "exclude": ["node_modules", "test-results", "playwright-report"]
+}

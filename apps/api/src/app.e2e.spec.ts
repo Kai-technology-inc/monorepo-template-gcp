@@ -1,7 +1,13 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import type { CreateInvitationResponse, MemberListResponse, Session } from '@app/contracts';
+import type {
+    CreateInvitationResponse,
+    FlagListResponse,
+    FlagState,
+    MemberListResponse,
+    Session,
+} from '@app/contracts';
 import { FIREBASE_APP, IdTokenVerifier } from '@app/api-core/firebase/firebase-admin.module';
 import { Store } from '@app/api-core/persistence/store';
 import { FakeTokenVerifier } from '@app/api-core/testing/fake-token-verifier';
@@ -22,7 +28,9 @@ describe('API over HTTP', () => {
     const verifier = new FakeTokenVerifier()
         .issue('ada', { uid: 'ada', email: 'ada@example.com', email_verified: true, name: 'Ada' })
         .issue('bob', { uid: 'bob', email: 'bob@example.com', email_verified: true })
-        .issue('eve', { uid: 'eve', email: 'eve@example.com', email_verified: false });
+        .issue('eve', { uid: 'eve', email: 'eve@example.com', email_verified: false })
+        .issue('ops', { uid: 'ops', email: 'ops@example.com', email_verified: true })
+        .issue('cus', { uid: 'cus', email: 'cus@example.com', email_verified: true });
 
     beforeAll(async () => {
         process.env.ALLOWED_ORIGINS = 'http://localhost:3000';
@@ -206,6 +214,64 @@ describe('API over HTTP', () => {
         expect(
             await call('GET', `/workspaces/${session.body.workspace?.id}/members`, 'eve'),
         ).toMatchObject({ status: 403, body: { code: 'EMAIL_NOT_VERIFIED' } });
+    });
+
+    it('operates flags from the operator workspace, and the session follows', async () => {
+        const ops = await call<Session>('POST', '/account/register', 'ops', {
+            displayName: 'Ops',
+            locale: 'en',
+            workspaceName: 'Operators',
+        });
+        const customer = await call<Session>('POST', '/account/register', 'cus', {
+            displayName: 'Cus',
+            locale: 'en',
+            workspaceName: 'Customer',
+        });
+        const operators = ops.body.workspace?.id as string;
+        const customers = customer.body.workspace?.id as string;
+        expect(ops.body.flags).toEqual({ 'dashboard-whats-new': false });
+
+        process.env.FLAGS_ADMIN_WORKSPACE_ID = operators;
+        try {
+            const flag = `/workspaces/${operators}/flags/dashboard-whats-new`;
+            expect(await call('GET', `/workspaces/${customers}/flags`, 'cus')).toMatchObject({
+                status: 403,
+                body: { code: 'FORBIDDEN' },
+            });
+            expect(
+                (await call<FlagListResponse>('GET', `/workspaces/${operators}/flags`, 'ops')).body,
+            ).toMatchObject({ provider: 'firestore', flags: [{ key: 'dashboard-whats-new' }] });
+            expect(await call('PUT', flag, 'ops', { value: 'yes' })).toMatchObject({
+                status: 400,
+                body: {
+                    code: 'VALIDATION_FAILED',
+                    issues: { value: expect.any(Array) as unknown },
+                },
+            });
+            expect(
+                await call('GET', `/workspaces/${operators}/flags/not-declared`, 'ops'),
+            ).toMatchObject({ status: 404 });
+
+            const team = await call<FlagState>('PUT', flag, 'ops', {
+                value: true,
+                allowList: { workspaceIds: [operators] },
+            });
+            expect(team).toMatchObject({
+                status: 200,
+                body: { rule: { enabled: true, value: true }, updatedBy: 'ops' },
+            });
+            const flagOf = async (token: string) =>
+                (await call<Session>('GET', '/account/session', token)).body.flags[
+                    'dashboard-whats-new'
+                ];
+            expect(await flagOf('ops')).toBe(true);
+            expect(await flagOf('cus')).toBe(false);
+
+            expect((await call('DELETE', flag, 'ops')).status).toBe(204);
+            expect(await flagOf('ops')).toBe(false);
+        } finally {
+            delete process.env.FLAGS_ADMIN_WORKSPACE_ID;
+        }
     });
 
     it('refuses ids that would change the Firestore path', async () => {

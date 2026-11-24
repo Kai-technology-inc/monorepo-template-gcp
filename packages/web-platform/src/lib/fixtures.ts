@@ -1,4 +1,4 @@
-import type { Member, Session } from '@app/contracts';
+import { FLAG_DEFAULTS, type Member, type Session } from '@app/contracts';
 
 /** Test data shared by the specs. */
 export function aSession(overrides: Partial<Session> = {}): Session {
@@ -27,10 +27,12 @@ export function aSession(overrides: Partial<Session> = {}): Session {
             'members:read',
             'members:manage',
             'invitations:manage',
+            'flags:manage',
         ],
         memberships: [{ workspaceId: 'w1', name: 'Acme', slug: 'acme', role: 'OWNER' }],
         emailVerified: true,
         emailVerificationRequired: true,
+        flags: FLAG_DEFAULTS,
         ...overrides,
     };
 }

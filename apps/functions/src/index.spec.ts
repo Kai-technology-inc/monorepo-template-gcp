@@ -12,7 +12,8 @@ describe('functions index', () => {
 
     it.each(API_FUNCTIONS)('exports %s', (name) => {
         expect(source).toMatch(
-            new RegExp(`export const ${name} = createHttpFunction\\(host, '${name}'\\)`),
+            // Options may follow the name: `createHttpFunction(host, 'account', { secrets: [...] })`.
+            new RegExp(`export const ${name} = createHttpFunction\\(host, '${name}'[,)]`),
         );
     });
 });

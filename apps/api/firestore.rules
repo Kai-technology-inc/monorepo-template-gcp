@@ -4,8 +4,9 @@ rules_version = '2';
 //
 // Every write goes through the API (Admin SDK, which bypasses these rules), where the business rules live. The
 // browser may read only what the API would show it anyway: its own profile, and the workspaces it belongs to with
-// their members, e.g. for realtime listeners. Invitations hold a token hash and are never readable. Anything not
-// matched here is denied. A new collection is denied until you add a block for it, with its spec in
+// their members, e.g. for realtime listeners. Invitations hold a token hash and are never readable. Feature-flag
+// rules are evaluated by the API and reach the browser only as values in the session. Anything not matched here is
+// denied. A new collection is denied until you add a block for it, with its spec in
 // apps/api/src/firestore-rules/firestore.rules.spec.ts.
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -35,6 +36,11 @@ service cloud.firestore {
       match /invitations/{invitationId} {
         allow read, write: if false;
       }
+    }
+
+    // Feature-flag rules of the own provider (docs/FLAGS.md): who gets what is not the browser's business.
+    match /flags/{flagKey} {
+      allow read, write: if false;
     }
 
     match /{document=**} {

@@ -70,6 +70,9 @@ jobs:
           FIREBASE_PROJECT_ID: ${{ vars[format('{0}_FIREBASE_PROJECT_ID', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
           ALLOWED_ORIGINS: ${{ vars[format('{0}_ALLOWED_ORIGINS', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
           FUNCTIONS_REGION: ${{ vars.FUNCTIONS_REGION || 'us-central1' }}
+          # Feature flags (docs/FLAGS.md): optional; unset means the own provider and nobody operating it via the API.
+          FLAGS_PROVIDER: ${{ vars[format('{0}_FLAGS_PROVIDER', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
+          FLAGS_ADMIN_WORKSPACE_ID: ${{ vars[format('{0}_FLAGS_ADMIN_WORKSPACE_ID', inputs.environment == 'prod' && 'PROD' || 'QA')] }}
 
   web:
     name: Web (App Hosting)

@@ -8,7 +8,7 @@ The web's primitives: design tokens, UI components, the Firebase and HTTP client
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `styles/`  | `tokens.css` (colors, spacing, type: light and dark) and `kit.css`. Use the tokens; no hard-coded colors                                    |
 | `ui/`      | `Button`, `Card`, `TextField`/`SelectField` (labelled, `aria-*` wired), `Table`, `Alert`, `ConfirmDialog` (native `<dialog>`), `Spinner`…   |
-| `context/` | `AuthProvider` / `useAuth()`: Firebase sign-in state plus the API `Session`; `sessionCan(session, 'members:manage')`                        |
+| `context/` | `AuthProvider` / `useAuth()`: Firebase sign-in state plus the API `Session`; `sessionCan(session, 'members:manage')`; `useFlag(key)`        |
 | `lib/`     | `callApi` (the only way to call the API), `useApiQuery`, `ApiError` + `useErrorMessage`, `ROUTES` + `withNext`, `readWebEnv`, locale cookie |
 
 ## Rules of thumb
@@ -19,6 +19,8 @@ The web's primitives: design tokens, UI components, the Firebase and HTTP client
   Never print `error.message`.
 - **Link with `ROUTES`**, never a string literal; URL segments are English kebab-case.
 - **Gate actions with permissions** (`sessionCan`), never roles.
+- **Read feature flags with `useFlag('key')`**: the API evaluated them and sent them with the session; the browser
+  never evaluates a flag nor talks to a flags provider (docs/FLAGS.md).
 - **Configuration** is `readWebEnv()`: `NEXT_PUBLIC_*` variables written out literally, so Next inlines them.
 
 Tests: `pnpm turbo run test --filter=@app/web-kit` (Vitest in Node: rules are pure functions and components are

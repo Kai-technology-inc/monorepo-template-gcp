@@ -15,6 +15,10 @@ coverage/
 gha-creds-*.json
 # The Functions bundle written by scripts/bundle-functions.mjs (and its deploy .env / emulator secrets).
 .functions/
+# Browser behavior tests (apps/e2e): results, report and traces of the last run.
+test-results/
+playwright-report/
+blob-report/
 # Local emulator state (pnpm emulators exports here on exit).
 .emulator-data/
 firebase-debug.log

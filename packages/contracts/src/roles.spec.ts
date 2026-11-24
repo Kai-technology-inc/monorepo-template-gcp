@@ -12,6 +12,12 @@ describe('roles', () => {
         expect(hasPermission('ADMIN', 'invitations:manage')).toBe(true);
     });
 
+    it('lets owners and admins operate flags, never members', () => {
+        expect(hasPermission('OWNER', 'flags:manage')).toBe(true);
+        expect(hasPermission('ADMIN', 'flags:manage')).toBe(true);
+        expect(hasPermission('MEMBER', 'flags:manage')).toBe(false);
+    });
+
     it('grants nothing without a role', () => {
         expect(hasPermission(null, 'workspace:read')).toBe(false);
     });
