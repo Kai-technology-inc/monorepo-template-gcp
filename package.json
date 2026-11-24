@@ -17,6 +17,7 @@
         "test": "turbo run test",
         "test:arch": "turbo run test:arch",
         "test:rules": "pnpm --filter @app/api test:rules",
+        "test:e2e": "turbo run test:e2e --concurrency=2",
         "check": "turbo run typecheck lint test test:arch --concurrency=4",
         "check:changed": "turbo run typecheck lint test test:arch --concurrency=4 --filter=...[origin/main]",
         "format": "prettier --write .",

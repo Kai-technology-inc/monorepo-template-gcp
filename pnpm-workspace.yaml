@@ -42,6 +42,8 @@ catalog:
   esbuild: '0.28.2'
   # Feature flags: the LaunchDarkly adapter (packages/api-core/src/flags/launchdarkly). Dropping that adapter drops this line.
   '@launchdarkly/node-server-sdk': '9.17.1'
+  # Browser behavior tests (apps/e2e).
+  '@playwright/test': '1.65.1'
 
 # pnpm 12 does not run install scripts without explicit permission (ERR_PNPM_IGNORED_BUILDS). None of these is
 # needed: esbuild and unrs-resolver ship their binary as an optional dependency, protobufjs and @firebase/util only

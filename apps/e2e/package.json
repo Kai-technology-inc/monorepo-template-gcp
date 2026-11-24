@@ -1,0 +1,27 @@
+{
+    "name": "@app/e2e",
+    "version": "0.1.0",
+    "description": "Browser behavior tests: Playwright drives the web against the local stack (emulators, API, web) and asserts what the person sees and what the web sends to the API.",
+    "private": true,
+    "license": "MIT",
+    "engines": {
+        "node": "22"
+    },
+    "scripts": {
+        "test:e2e": "playwright test",
+        "browsers": "playwright install chromium",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "lint": "eslint src",
+        "format": "prettier --write \"src/**/*.ts\" playwright.config.ts"
+    },
+    "devDependencies": {
+        "@app/contracts": "workspace:*",
+        "@app/eslint-config": "workspace:*",
+        "@app/i18n": "workspace:*",
+        "@playwright/test": "catalog:",
+        "@types/node": "catalog:",
+        "eslint": "catalog:",
+        "prettier": "catalog:",
+        "typescript": "catalog:"
+    }
+}
