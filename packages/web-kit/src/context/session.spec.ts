@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Session } from '@app/contracts';
+import { FLAG_DEFAULTS, type Session } from '@app/contracts';
 import { needsEmailVerification, sessionCan } from './AuthContext';
 
 const session = (overrides: Partial<Session> = {}): Session => ({
@@ -18,6 +18,7 @@ const session = (overrides: Partial<Session> = {}): Session => ({
     memberships: [],
     emailVerified: true,
     emailVerificationRequired: true,
+    flags: FLAG_DEFAULTS,
     ...overrides,
 });
 

@@ -13,5 +13,7 @@ Layer 0: the shared model. API and web both depend on it; it imports nothing fro
 - **Routes** are built with `apiRoutes`, in English kebab-case (`url-vocabulary.ts`). The API's arch spec checks the
   controllers against the same rules.
 - **Locales**: `SUPPORTED_LOCALES` is the list the dictionaries must cover. See `docs/I18N.md`.
+- **Feature flags** are declared in `FLAGS` (`flags.ts`): key, value type (zod) and default. A user-visible change
+  ships behind one; remove it once fully rolled out. See `docs/FLAGS.md`.
 
 Build: `tsc -b` to `dist/` (CommonJS), consumed by Nest as-is and transpiled by Next.

@@ -145,6 +145,10 @@ export const es: Messages = {
             language: 'Cambia tu idioma en <link>Configuración</link>.',
             build: 'Agrega tu primer módulo: mira docs/EXTENDING.md.',
         },
+        whatsNew: {
+            title: 'Novedades',
+            body: 'Los cambios ahora se despliegan apagados y se encienden para tu equipo, un porcentaje de personas o todos, sin un nuevo despliegue. Esta tarjeta es el ejemplo: mira docs/FLAGS.md.',
+        },
     },
     members: {
         title: 'Miembros',
@@ -239,6 +243,7 @@ export const es: Messages = {
         INVITATION_EXPIRED: 'Esta invitación venció. Pide una nueva.',
         INVITATION_EMAIL_MISMATCH: 'Esta invitación se envió a otro email.',
         RATE_LIMITED: 'Demasiados pedidos. Espera un momento y vuelve a intentar.',
+        FLAGS_MANAGED_ELSEWHERE: 'Estos flags se administran en otra herramienta, no aquí.',
         INTERNAL: 'Algo salió mal de nuestro lado. Vuelve a intentar.',
         network: 'No pudimos conectarnos con el servidor. Revisa tu conexión.',
         unknown: 'Algo salió mal. Vuelve a intentar.',

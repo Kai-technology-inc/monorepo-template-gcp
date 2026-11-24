@@ -105,12 +105,41 @@ bash scripts/deploy-web.sh qa
 | GitHub variable                      | `{QA,PROD}_APPHOSTING_BACKEND_ID`                                                                                  | optional, default `web`                                                            |
 | GitHub variable                      | `FUNCTIONS_REGION`                                                                                                 | optional, default `us-central1`                                                    |
 | GitHub var/secret                    | `TURBO_API`, `TURBO_TEAM` / `TURBO_TOKEN`                                                                          | optional Turborepo remote cache                                                    |
+| GitHub variable                      | `{QA,PROD}_FLAGS_PROVIDER`                                                                                         | optional, default `firestore` (`docs/FLAGS.md`)                                    |
+| GitHub variable                      | `{QA,PROD}_FLAGS_ADMIN_WORKSPACE_ID`                                                                               | optional: the workspace that operates flags                                        |
 | `apps/web/apphosting.<env>.yaml`     | `NEXT_PUBLIC_*`                                                                                                    | public Firebase config and the API base URL                                        |
 | Functions `.env` (written at deploy) | `APP_ENVIRONMENT`, `ALLOWED_ORIGINS`, `AUTH_REQUIRE_VERIFIED_EMAIL`, `FUNCTIONS_REGION`, `FUNCTIONS_MAX_INSTANCES` | API runtime config                                                                 |
+| Functions `.env` (written at deploy) | `FLAGS_PROVIDER`, `FLAGS_ADMIN_WORKSPACE_ID`, `FLAGS_CACHE_SECONDS`                                                | feature flags (`docs/FLAGS.md`)                                                    |
 
 **Secrets** (API keys of providers you add) go in Secret Manager: `firebase functions:secrets:set NAME`, declared with
 `defineSecret` in `packages/api-host/src/function-options.ts` and mounted only on the Functions that need them. Never
 in `.env`, `apphosting.*.yaml` or GitHub variables.
+
+## Feature flags
+
+The API evaluates flags with the provider in `FLAGS_PROVIDER` (`docs/FLAGS.md`). Nothing to do for the default,
+`firestore`: rules live in the project's Firestore and are operated through the API's admin routes. To operate them
+in an environment, create (or pick) the operator workspace there and set its id in the GitHub variable
+`{QA,PROD}_FLAGS_ADMIN_WORKSPACE_ID`; without it, nobody can change flags through the API.
+
+- **LaunchDarkly** (`{QA,PROD}_FLAGS_PROVIDER=launchdarkly`), one LaunchDarkly environment per deploy environment.
+  Store its server-side SDK key as a secret and mount it on both Functions (they both build sessions):
+
+  ```bash
+  pnpm exec firebase functions:secrets:set LAUNCHDARKLY_SDK_KEY --project <project>
+  # apps/functions/src/index.ts
+  export const account = createHttpFunction(host, 'account', { secrets: ['LAUNCHDARKLY_SDK_KEY'] });
+  export const workspaces = createHttpFunction(host, 'workspaces', { secrets: ['LAUNCHDARKLY_SDK_KEY'] });
+  ```
+
+- **Remote Config** (`{QA,PROD}_FLAGS_PROVIDER=remote-config`): enable its API and let the Functions' runtime
+  service account read it. Flags are parameters of the **server** template (console → Remote Config → Server).
+
+  ```bash
+  gcloud services enable firebaseremoteconfig.googleapis.com --project <project>
+  gcloud projects add-iam-policy-binding <project> --role roles/cloudconfig.viewer \
+      --member serviceAccount:<project-number>-compute@developer.gserviceaccount.com
+  ```
 
 ## What the deployer can do
 

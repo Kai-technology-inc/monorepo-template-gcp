@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { RichText, useT } from '@app/i18n/react';
-import { Card, ROUTES, useAuth } from '@app/web-kit';
+import { Card, ROUTES, useAuth, useFlag } from '@app/web-kit';
 import { useMembers } from '../lib/use-members';
 
 export function DashboardScreen(): ReactNode {
@@ -11,6 +11,8 @@ export function DashboardScreen(): ReactNode {
     const { session, can } = useAuth();
     const workspace = session?.workspace ?? null;
     const { members } = useMembers(workspace && can('members:read') ? workspace.id : null);
+    // The template's example of a change released behind a flag (docs/FLAGS.md): off until someone turns it on.
+    const whatsNew = useFlag('dashboard-whats-new');
     if (!session || !workspace || !session.role) return null;
 
     return (
@@ -26,6 +28,11 @@ export function DashboardScreen(): ReactNode {
                     })}
                 </p>
             </div>
+            {whatsNew ? (
+                <Card title={t('dashboard.whatsNew.title')}>
+                    <p className="muted">{t('dashboard.whatsNew.body')}</p>
+                </Card>
+            ) : null}
             <Card title={workspace.name}>
                 <p className="muted">
                     {members

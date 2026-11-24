@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import {
     readEnvironment,
+    readFlagsProviderName,
     readPort,
     readProjectId,
     usesEmulators,
@@ -20,7 +21,7 @@ async function bootstrap(): Promise<void> {
     await app.listen(port);
     const target = usesEmulators() ? 'emulators' : 'real project';
     Logger.log(
-        `API on http://localhost:${port} · ${readEnvironment()} · ${readProjectId() ?? 'no project'} (${target}) · docs at /docs`,
+        `API on http://localhost:${port} · ${readEnvironment()} · ${readProjectId() ?? 'no project'} (${target}) · flags: ${readFlagsProviderName()} · docs at /docs`,
         'Bootstrap',
     );
 }

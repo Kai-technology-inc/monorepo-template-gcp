@@ -36,6 +36,9 @@ export const apiRoutes = {
             `/workspaces/${enc(workspaceId)}/invitations/${enc(invitationId)}/preview`,
         acceptInvitation: (workspaceId: string, invitationId: string) =>
             `/workspaces/${enc(workspaceId)}/invitations/${enc(invitationId)}/accept`,
+        flags: (workspaceId: string) => `/workspaces/${enc(workspaceId)}/flags`,
+        flag: (workspaceId: string, flagKey: string) =>
+            `/workspaces/${enc(workspaceId)}/flags/${enc(flagKey)}`,
     },
 } as const;
 

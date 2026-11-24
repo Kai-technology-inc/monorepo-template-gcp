@@ -167,6 +167,9 @@ catalogs:
     '@eslint/js':
       specifier: 10.0.1
       version: 10.0.1
+    '@launchdarkly/node-server-sdk':
+      specifier: 9.17.1
+      version: 9.17.1
     '@nestjs/common':
       specifier: 12.5.0
       version: 12.5.0
@@ -452,6 +455,9 @@ importers:
       '@app/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@launchdarkly/node-server-sdk':
+        specifier: 'catalog:'
+        version: 9.17.1(supports-color@7.2.0)
       '@nestjs/common':
         specifier: 'catalog:'
         version: 12.5.0(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0)
@@ -1828,6 +1834,18 @@ packages:
 
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
+
+  '@launchdarkly/eventsource@0.2.5':
+    resolution: {integrity: sha512-LXH/j6k3jg4vuppfpmSEaw6NgHZYVeNAEKo4o1aiAIJYY6PgNpEwIuCAnhHim6w0e/YKbMGgpaLBhOjOvU7EyQ==}
+
+  '@launchdarkly/js-sdk-common@2.32.3':
+    resolution: {integrity: sha512-Z7C5wXFuvK9uFEg8Zbg18K7btqlDrcUgNFzFn/stVt3zEM9pZr58hJnhhWM854Ru0nFr325Wak7LS+v878mAYA==}
+
+  '@launchdarkly/js-server-sdk-common@2.26.8':
+    resolution: {integrity: sha512-5F6ocr5ZyIqfIR34xp5epC/vPxXulq5jI5rKW3Yw/1IIrsh1p4Q5npT7HmMd1phLv7+H377QzFEDjetcUyJ6ug==}
+
+  '@launchdarkly/node-server-sdk@9.17.1':
+    resolution: {integrity: sha512-htzxaCurBqTs9C3sNR+bKjmtmsV4gHunXj+2YHLDs1psAkDl89gI4mGKS1lQAxO9u9mrfpRFDEkQgqvc32PYCA==}
 
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
@@ -4660,6 +4678,10 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  lru-cache@6.0.0:
+    resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
+    engines: {node: '>=10'}
+
   lru-memoizer@3.0.0:
     resolution: {integrity: sha512-m83w/cYXLdUIboKSPxzPAGfYnk+vqeDYXuoSrQRw1q+yVEd8IXhvMufN8Q5TIPe7e2jyX4SRNrDJI2Skw1yznQ==}
 
@@ -5387,6 +5409,11 @@ packages:
     resolution: {integrity: sha512-GYrCADwpu6yV5OAvchkQ27Z5wwMxWAEMg5NNWjyHh/5DboFFqbdbvYNIvZouQpxXyeMPoTOh0vdPYKlf0ZswdQ==}
     hasBin: true
 
+  semver@7.5.4:
+    resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   semver@7.8.6:
     resolution: {integrity: sha512-9lpSSU4Mly3mrtruwLs1eLK6+gzbzqeBFwRNjIjE+9LuDpWdYctrQlQ3ej1Ilgi7gknpsTRnPoLP8DpCHqHIJw==}
     engines: {node: '>=10'}
@@ -6055,6 +6082,9 @@ packages:
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
+
+  yallist@4.0.0:
+    resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
   yallist@5.0.0:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
@@ -7207,6 +7237,23 @@ snapshots:
       keyv: 5.6.0
 
   '@keyv/serialize@1.1.1': {}
+
+  '@launchdarkly/eventsource@0.2.5': {}
+
+  '@launchdarkly/js-sdk-common@2.32.3': {}
+
+  '@launchdarkly/js-server-sdk-common@2.26.8':
+    dependencies:
+      '@launchdarkly/js-sdk-common': 2.32.3
+      semver: 7.5.4
+
+  '@launchdarkly/node-server-sdk@9.17.1(supports-color@7.2.0)':
+    dependencies:
+      '@launchdarkly/eventsource': 0.2.5
+      '@launchdarkly/js-server-sdk-common': 2.26.8
+      https-proxy-agent: 7.0.6(supports-color@7.2.0)
+    transitivePeerDependencies:
+      - supports-color
 
   '@lukeed/csprng@1.1.0': {}
 
@@ -10417,6 +10464,10 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  lru-cache@6.0.0:
+    dependencies:
+      yallist: 4.0.0
+
   lru-memoizer@3.0.0:
     dependencies:
       lodash.clonedeep: 4.5.0
@@ -11205,6 +11256,10 @@ snapshots:
       semver: 6.3.2
 
   semver@6.3.2: {}
+
+  semver@7.5.4:
+    dependencies:
+      lru-cache: 6.0.0
 
   semver@7.8.6: {}
 
@@ -12069,6 +12124,8 @@ snapshots:
   y18n@5.0.8: {}
 
   yallist@3.1.1: {}
+
+  yallist@4.0.0: {}
 
   yallist@5.0.0: {}
 

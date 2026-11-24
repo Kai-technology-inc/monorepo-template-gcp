@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { FlagValuesSchema } from './flags';
 import { LocaleSchema } from './locale';
 import { DisplayNameSchema, IdSchema } from './primitives';
 import { PermissionSchema, WorkspaceRoleSchema } from './roles';
@@ -27,6 +28,11 @@ export const SessionSchema = z.object({
      * `true` and `emailVerified` is `false`, the web shows the verification screen instead of the app.
      */
     emailVerificationRequired: z.boolean(),
+    /**
+     * Every declared flag (`FLAGS`), evaluated by the API for this person in the active workspace. The web reads them
+     * with `useFlag(key)`; a missing or malformed value parses as the declared default.
+     */
+    flags: FlagValuesSchema,
 });
 export type Session = z.infer<typeof SessionSchema>;
 

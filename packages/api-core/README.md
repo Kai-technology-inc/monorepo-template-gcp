@@ -8,10 +8,11 @@ file: `@app/api-core/auth/decorators`, `@app/api-core/persistence/store`…
 | `auth/`        | `FirebaseAuthGuard` (global, on every route), the decorators below, `SessionResolver` (identity → `AuthContext` with the caller's role in the route's workspace) |
 | `config/`      | `environment.ts`: the only file that reads `process.env` for configuration                                                                                       |
 | `firebase/`    | Firebase Admin app and `IdTokenVerifier` (replaced by `FakeTokenVerifier` in tests)                                                                              |
+| `flags/`       | `FlagsProvider` (the flags port: `evaluate()` never throws), one adapter per folder, `providers.ts` (`FLAGS_PROVIDER`), `FlagsModule`; docs/FLAGS.md             |
 | `http/`        | `AppError`, `AllExceptionsFilter` (every error leaves as an `ApiErrorBody`), `ZodBody`/`ZodQuery`, request ids                                                   |
 | `persistence/` | `Store` (the persistence port), `FirestoreStore`, `paths.ts` (the only place that spells a Firestore path), timestamps                                           |
 | `time/`        | `CLOCK`: services ask it for the time, so rules that depend on time are testable                                                                                 |
-| `testing/`     | `InMemoryStore` (transactions included), `FakeTokenVerifier`, `TestPlatformModule`, identities                                                                   |
+| `testing/`     | `InMemoryStore` (transactions included), `FakeTokenVerifier`, `TestPlatformModule`, identities, the flags adapters' shared spec                                  |
 
 ## Auth, route by route
 
@@ -36,5 +37,8 @@ Check permissions, never roles: `@RequirePermission('members:manage')`, not "if 
 - **Read and write through `Store`**, never the Firestore SDK, and parse what you read with its schema
   (`parseDocument`). Multi-document changes go in `store.runTransaction`.
 - **A new setting** is a function in `config/environment.ts`, with its default and the reason for it.
+- **A flag decides something in the API**: inject `FlagsProvider` and ask
+  `flags.evaluate(key, { userId, workspaceId })`. A new flags adapter is ready when it passes
+  `describeFlagsProviderContract` (docs/FLAGS.md).
 
 Tests: `pnpm turbo run test --filter=@app/api-core` (Vitest, no emulator).

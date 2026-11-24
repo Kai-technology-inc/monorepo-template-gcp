@@ -152,6 +152,10 @@ export const en = {
             language: 'Change your language in <link>Settings</link>.',
             build: 'Add your first module: see docs/EXTENDING.md.',
         },
+        whatsNew: {
+            title: "What's new",
+            body: 'Changes now ship switched off and are turned on for your team, a percentage of people or everyone, without a new deploy. This card is the example: see docs/FLAGS.md.',
+        },
     },
     members: {
         title: 'Members',
@@ -246,6 +250,7 @@ export const en = {
         INVITATION_EXPIRED: 'This invitation has expired. Ask for a new one.',
         INVITATION_EMAIL_MISMATCH: 'This invitation was sent to a different email address.',
         RATE_LIMITED: 'Too many requests. Wait a moment and try again.',
+        FLAGS_MANAGED_ELSEWHERE: 'These flags are managed in another tool, not here.',
         INTERNAL: 'Something went wrong on our side. Please try again.',
         network: "We couldn't reach the server. Check your connection.",
         unknown: 'Something went wrong. Please try again.',

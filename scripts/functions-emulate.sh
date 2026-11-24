@@ -11,5 +11,6 @@ cat > apps/functions/.functions/.env <<ENV
 APP_ENVIRONMENT=local
 ALLOWED_ORIGINS=http://localhost:3000
 AUTH_REQUIRE_VERIFIED_EMAIL=false
+FLAGS_ADMIN_WORKSPACE_ID=*
 ENV
 pnpm exec firebase emulators:start --only functions,auth,firestore --project demo-template

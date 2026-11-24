@@ -34,6 +34,9 @@ export const paths = {
     invitation: (workspaceId: string, invitationId: string) =>
         `workspaces/${segment(workspaceId)}/invitations/${segment(invitationId)}`,
     workspaceSlug: (slug: string) => `workspaceSlugs/${segment(slug)}`,
+    /** Feature-flag rules of the own provider (`FLAGS_PROVIDER=firestore`): global to the deployment, API only. */
+    flags: () => 'flags',
+    flag: (flagKey: string) => `flags/${segment(flagKey)}`,
 } as const;
 
 /** The collection-group id of memberships: `collectionGroup('members')` finds a person's workspaces. */

@@ -1,24 +1,33 @@
 import type { AuthContext, Identity } from '@app/api-core/auth/auth-context';
 import { SessionResolver } from '@app/api-core/auth/session-resolver';
+import { FirestoreFlagsProvider } from '@app/api-core/flags/firestore/firestore-flags-provider';
 import { InMemoryStore } from '@app/api-core/testing/in-memory-store';
 import { identity } from '@app/api-core/testing/identities';
 import { fixedClock } from '@app/api-core/time/clock';
 import { AccountService } from '../account/account.service';
+import { FlagsAdminService } from '../flags/flags-admin.service';
 import { SessionService } from '../session/session.service';
 import { InvitationsService } from '../workspaces/invitations.service';
 import { MembersService } from '../workspaces/members.service';
 import { WorkspacesService } from '../workspaces/workspaces.service';
 
-/** Every service of this package over one in-memory store and one fixed clock, as the specs use them. */
+/**
+ * Every service of this package over one in-memory store and one fixed clock, as the specs use them. Flags are the
+ * own provider over the same store (what `FLAGS_PROVIDER=firestore` runs), so a spec can set a rule and read the
+ * session.
+ */
 export function createKit(now = '2026-01-01T00:00:00.000Z') {
     const store = new InMemoryStore();
     const clock = fixedClock(now);
     const resolver = new SessionResolver(store);
-    const sessions = new SessionService(store, resolver);
+    const flags = new FirestoreFlagsProvider(store, { clock, cacheMs: 0 });
+    const sessions = new SessionService(store, resolver, flags);
     const kit = {
         store,
         clock,
+        flags,
         sessions,
+        flagsAdmin: new FlagsAdminService(flags),
         account: new AccountService(store, sessions, clock),
         workspaces: new WorkspacesService(store, sessions, clock),
         members: new MembersService(store),

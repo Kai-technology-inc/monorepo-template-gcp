@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
     assertSafeEnvironment,
+    canOperateFlagsFrom,
     readAllowedOrigins,
     readEnvironment,
+    readFlagsCacheMs,
+    readFlagsProviderName,
+    readFlagsTimeoutMs,
+    readLaunchDarklySdkKey,
     readProjectId,
     requiresVerifiedEmail,
 } from './environment';
@@ -46,5 +51,33 @@ describe('environment', () => {
         expect(() =>
             assertSafeEnvironment({ FIRESTORE_EMULATOR_HOST: '127.0.0.1:8080' }),
         ).not.toThrow();
+    });
+
+    it('evaluates flags with Firestore unless told otherwise', () => {
+        expect(readFlagsProviderName({})).toBe('firestore');
+        expect(readFlagsProviderName({ FLAGS_PROVIDER: ' LaunchDarkly ' })).toBe('launchdarkly');
+    });
+
+    it('reads the flags cache and timeout with sane floors', () => {
+        expect(readFlagsCacheMs({})).toBe(15_000);
+        expect(readFlagsCacheMs({ FLAGS_CACHE_SECONDS: '0' })).toBe(0);
+        expect(readFlagsCacheMs({ FLAGS_CACHE_SECONDS: '-5' })).toBe(0);
+        expect(readFlagsTimeoutMs({})).toBe(1000);
+        expect(readFlagsTimeoutMs({ FLAGS_TIMEOUT_MS: '0' })).toBe(1);
+    });
+
+    it('lets only the configured workspace operate flags, and `*` only locally', () => {
+        expect(canOperateFlagsFrom('w1', {})).toBe(false);
+        expect(canOperateFlagsFrom('w1', { FLAGS_ADMIN_WORKSPACE_ID: 'w1' })).toBe(true);
+        expect(canOperateFlagsFrom('w2', { FLAGS_ADMIN_WORKSPACE_ID: 'w1' })).toBe(false);
+        expect(canOperateFlagsFrom('w2', { FLAGS_ADMIN_WORKSPACE_ID: '*' })).toBe(true);
+        expect(
+            canOperateFlagsFrom('w2', { FLAGS_ADMIN_WORKSPACE_ID: '*', APP_ENVIRONMENT: 'prod' }),
+        ).toBe(false);
+    });
+
+    it('needs the LaunchDarkly key only when asked for it', () => {
+        expect(() => readLaunchDarklySdkKey({})).toThrow(/LAUNCHDARKLY_SDK_KEY/);
+        expect(readLaunchDarklySdkKey({ LAUNCHDARKLY_SDK_KEY: ' sdk-1 ' })).toBe('sdk-1');
     });
 });
