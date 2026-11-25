@@ -127,34 +127,55 @@ try {
 }
 
 const IDENTITY = `https://identitytoolkit.googleapis.com/admin/v2/projects/${project}/config`;
+// Two requests, not one: Firebase may refuse to change the email templates of a new project
+// (EMAIL_TEMPLATE_UPDATE_NOT_ALLOWED), and that must not cost the authorized domain, without which nobody can sign in.
+let config = null;
 try {
-    const config = await api('GET', IDENTITY);
+    config = await api('GET', IDENTITY);
     const domains = new Set(config.authorizedDomains ?? []);
     domains.add(host);
-    const sendEmail = {
-        ...(config.notification?.sendEmail ?? {}),
-        callbackUri: `${origin}/auth/action`,
-    };
-    await api(
-        'PATCH',
-        `${IDENTITY}?updateMask=authorizedDomains,notification.sendEmail.callbackUri`,
-        {
-            authorizedDomains: [...domains],
-            notification: { sendEmail },
-        },
-    );
+    await api('PATCH', `${IDENTITY}?updateMask=authorizedDomains`, {
+        authorizedDomains: [...domains],
+    });
     ok(`Auth authorized domain: ${host}`);
-    ok(`Auth email action URL: ${origin}/auth/action`);
 } catch (error) {
     warn(
-        `Could not update Firebase Auth (${error.message}). Console: https://console.firebase.google.com/project/${project}/authentication/settings ` +
-            `→ Authorized domains: add ${host}; Templates → Customize action URL: ${origin}/auth/action.`,
+        `Could not add ${host} to the Auth authorized domains (${error.message}). Console: ` +
+            `https://console.firebase.google.com/project/${project}/authentication/settings → Authorized domains.`,
     );
+}
+if (config) {
+    try {
+        await api('PATCH', `${IDENTITY}?updateMask=notification.sendEmail.callbackUri`, {
+            notification: {
+                sendEmail: {
+                    ...(config.notification?.sendEmail ?? {}),
+                    callbackUri: `${origin}/auth/action`,
+                },
+            },
+        });
+        ok(`Auth email action URL: ${origin}/auth/action`);
+    } catch (error) {
+        if (String(error.message).includes('EMAIL_TEMPLATE_UPDATE_NOT_ALLOWED')) {
+            // Not a failure of the setup: the emails still work, through Firebase's own page.
+            console.log(
+                `  ! Firebase does not let this project change its email templates yet: verification and password ` +
+                    `emails link to Firebase's page (${project}.firebaseapp.com/__/auth/action), which works. ` +
+                    `When it allows it: Templates → Customize action URL → ${origin}/auth/action.`,
+            );
+        } else {
+            warn(
+                `Could not set the Auth email action URL (${error.message}). Console: ` +
+                    `https://console.firebase.google.com/project/${project}/authentication/emails → ` +
+                    `Customize action URL: ${origin}/auth/action.`,
+            );
+        }
+    }
 }
 
 console.log(
     failures
-        ? `\n${failures} step(s) need the console (above). Then: pnpm doctor ${ENVIRONMENT}\n`
+        ? `\n${failures} step(s) need the console (above). Then: pnpm run doctor ${ENVIRONMENT}\n`
         : `\nDone. The web origin is ${origin}. If the API is already deployed, redeploy it so CORS picks up the origin.\n`,
 );
 process.exit(failures ? 1 : 0);

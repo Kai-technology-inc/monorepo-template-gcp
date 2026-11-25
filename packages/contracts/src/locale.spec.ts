@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { negotiateLocale } from './locale';
+import { DEFAULT_LOCALE, negotiateLocale } from './locale';
 
 describe('negotiateLocale', () => {
     it('falls back to the default without a header', () => {
-        expect(negotiateLocale(undefined)).toBe('en');
-        expect(negotiateLocale('')).toBe('en');
+        expect(negotiateLocale(undefined)).toBe(DEFAULT_LOCALE);
+        expect(negotiateLocale('')).toBe(DEFAULT_LOCALE);
     });
 
     it('maps a regional tag to its language', () => {
@@ -17,6 +17,6 @@ describe('negotiateLocale', () => {
     });
 
     it('ignores languages that are not supported', () => {
-        expect(negotiateLocale('fr, de')).toBe('en');
+        expect(negotiateLocale('fr, de')).toBe(DEFAULT_LOCALE);
     });
 });

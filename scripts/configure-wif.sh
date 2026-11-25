@@ -77,9 +77,20 @@ ROLES=(
     roles/secretmanager.viewer           # firebase-tools checks the secrets Functions declare
     roles/serviceusage.serviceUsageConsumer
 )
-for role in "${ROLES[@]}"; do
-    gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$DEPLOYER" --role="$role" \
+# A service account created a moment ago may not be visible to IAM policies yet ("does not exist"): retry a few
+# times instead of failing the whole setup on the first role.
+bind_role() {
+    local attempt
+    for attempt in 1 2 3 4 5 6; do
+        gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$DEPLOYER" --role="$1" \
+            --condition=None --quiet >/dev/null 2>&1 && return 0
+        sleep 10
+    done
+    gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$DEPLOYER" --role="$1" \
         --condition=None --quiet >/dev/null
+}
+for role in "${ROLES[@]}"; do
+    bind_role "$role"
     ok "$role"
 done
 

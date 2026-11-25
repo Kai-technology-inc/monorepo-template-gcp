@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { DEFAULT_LOCALE } from '@app/i18n';
 
 const cookieValue = vi.hoisted(() => ({
     locale: undefined as string | undefined,
@@ -32,10 +33,10 @@ describe('getLocale', () => {
         expect(await getLocale()).toBe('es');
     });
 
-    it('falls back to English', async () => {
+    it('falls back to the default language', async () => {
         cookieValue.locale = undefined;
         cookieValue.accept = null;
-        expect(await getLocale()).toBe('en');
+        expect(await getLocale()).toBe(DEFAULT_LOCALE);
     });
 });
 

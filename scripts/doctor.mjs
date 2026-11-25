@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Where is this repository in its setup, and what is the next step? Read-only: it never changes anything.
 //
-//   pnpm doctor              local development only
-//   pnpm doctor qa           + everything the qa environment needs, in order
-//   pnpm doctor prod --json  machine-readable, for coding agents (see docs/ONBOARDING.md)
+//   pnpm run doctor              local development only
+//   pnpm run doctor qa           + everything the qa environment needs, in order
+//   pnpm run doctor prod --json  machine-readable, for coding agents (see docs/ONBOARDING.md)
 //
 // Every step has an `owner`: `agent` means a coding agent (or you) can do it from a terminal with the command in
 // `next`; `human` means it needs a person: a login, a browser, a payment method or a decision.
@@ -95,6 +95,13 @@ const javaMajor = javaVersion
         ? Number(javaVersion[2])
         : Number(javaVersion[1])
     : 0;
+// Homebrew's openjdk@21 is keg-only: installed, but neither on the PATH nor in /usr/libexec/java_home.
+const kegJava =
+    javaMajor >= 21
+        ? null
+        : (['/opt/homebrew/opt/openjdk@21', '/usr/local/opt/openjdk@21'].find((dir) =>
+              existsSync(join(dir, 'bin', 'java')),
+          ) ?? null);
 const nodeMajor = Number(process.versions.node.split('.')[0]);
 gate(
     'node',
@@ -110,7 +117,9 @@ step(
     'Java 21+ (Firebase emulators)',
     'human',
     javaMajor >= 21,
-    'Install a JDK 21+ (e.g. `brew install openjdk@21`, or https://adoptium.net), needed by `pnpm dev`.',
+    kegJava
+        ? `Java 21 is installed but is not the default: \`export JAVA_HOME=${kegJava} PATH="${kegJava}/bin:$PATH"\` before \`pnpm dev\` (or link it: \`sudo ln -sfn ${kegJava}/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-21.jdk\`).`
+        : 'Install a JDK 21+ (e.g. `brew install openjdk@21`, or https://adoptium.net), needed by `pnpm dev`.',
 );
 gate(
     'dependencies',
@@ -131,6 +140,7 @@ step(
 
 let project;
 let repository;
+let firestoreRegion = null;
 if (ENVIRONMENT) {
     // ── Tools and logins ─────────────────────────────────────────────────────────────────────────────────────────
     gate(
@@ -227,17 +237,21 @@ if (ENVIRONMENT) {
         'Billing linked (Blaze plan)',
         'human',
         billing === 'True',
-        `Pick a billing account: \`gcloud billing accounts list\`, then with the person's OK: \`gcloud billing projects link ${project} --billing-account <ID>\`. No account yet: https://console.cloud.google.com/billing/linkedaccount?project=${project}`,
+        `Pick a billing account: \`gcloud billing accounts list\`, then with the person's OK: \`gcloud billing projects link ${project ?? '<project-id>'} --billing-account <ID>\`. No account yet: https://console.cloud.google.com/billing/linkedaccount?project=${project ?? '<project-id>'}`,
     );
-    const firestore =
-        !blocked &&
-        run('gcloud', [
-            'firestore',
-            'databases',
-            'describe',
-            '--database=(default)',
-            `--project=${project}`,
-        ]).ok;
+    const firestoreDescribed = blocked
+        ? { ok: false, out: '' }
+        : run('gcloud', [
+              'firestore',
+              'databases',
+              'describe',
+              '--database=(default)',
+              `--project=${project}`,
+              '--format=value(locationId)',
+          ]);
+    const firestore = firestoreDescribed.ok;
+    // App Hosting goes where the database is: a web in another region pays the round trip on every request.
+    firestoreRegion = firestore ? firestoreDescribed.out.trim() || null : null;
     gate(
         'firestore',
         'APIs, Firestore, Auth and web app configured',
@@ -317,7 +331,7 @@ if (ENVIRONMENT) {
         `App Hosting backend "${BACKEND_ID}" connected to GitHub`,
         'human',
         Boolean(backend?.codebase?.repository),
-        `In a terminal (interactive, opens GitHub in the browser): pnpm exec firebase apphosting:backends:create --project ${project} --backend ${BACKEND_ID} --primary-region us-central1 --root-dir apps/web — or the console: https://console.firebase.google.com/project/${project}/apphosting. Repository: ${repository}, root directory: apps/web, live branch: main.`,
+        `In a terminal (interactive, opens GitHub in the browser): pnpm exec firebase apphosting:backends:create --project ${project ?? '<project-id>'} --backend ${BACKEND_ID} --primary-region ${firestoreRegion ?? 'us-central1'} --root-dir apps/web — or the console: https://console.firebase.google.com/project/${project ?? '<project-id>'}/apphosting. Repository: ${repository}, root directory: apps/web, live branch: main.`,
     );
     const origin = backend?.uri ? `https://${backend.uri.replace(/^https?:\/\//, '')}` : undefined;
     let trafficDisabled = false;
@@ -428,7 +442,7 @@ if (JSON_OUTPUT) {
         console.log(`\n\x1b[1mNext (${next.owner}):\x1b[0m ${next.title}\n  ${next.next}\n`);
     } else {
         console.log(
-            `\n\x1b[32mAll done.\x1b[0m${ENVIRONMENT ? '' : ' Run `pnpm doctor qa` to go to Google Cloud.'}\n`,
+            `\n\x1b[32mAll done.\x1b[0m${ENVIRONMENT ? '' : ' Run `pnpm run doctor qa` to go to Google Cloud.'}\n`,
         );
     }
 }

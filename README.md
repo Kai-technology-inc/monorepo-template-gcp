@@ -21,7 +21,7 @@ own repository).
 Open the repository in Claude Code (or Cursor, Codex, any coding agent) and say **"Set me up"** (`/onboard` in
 Claude Code). The agent follows [`docs/ONBOARDING.md`](docs/ONBOARDING.md): it runs the app locally, creates your
 Google Cloud / Firebase projects, connects GitHub Actions and deploys, and asks you only for what needs a person:
-signing in, billing, connecting GitHub in the browser, and the decisions. `pnpm doctor qa` shows where you are at
+signing in, billing, connecting GitHub in the browser, and the decisions. `pnpm run doctor qa` shows where you are at
 any moment.
 
 ## Quick start (no Google Cloud account needed)
@@ -71,7 +71,7 @@ pnpm check               # everything
 pnpm test:rules          # Firestore rules against the emulator
 pnpm functions:emulate   # the real Functions bundle in the emulator
 pnpm create-version      # cut a release candidate (tag rcX.Y.Z → deploys QA)
-pnpm doctor [qa|prod]    # setup status and the next step
+pnpm run doctor [qa|prod]    # setup status and the next step
 ```
 
 ## Going to Google Cloud

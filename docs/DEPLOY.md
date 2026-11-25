@@ -1,7 +1,7 @@
 # Deploy
 
 Prefer to be guided? Ask a coding agent to "set me up": it follows [`ONBOARDING.md`](ONBOARDING.md). At any point,
-`pnpm doctor qa` (or `prod`) lists what is done and the next step.
+`pnpm run doctor qa` (or `prod`) lists what is done and the next step.
 
 Two Google Cloud projects (QA and production), each with Firebase. The API deploys to Cloud Functions, the web to
 Firebase App Hosting, and GitHub Actions does both, authenticated with Workload Identity Federation: there is no

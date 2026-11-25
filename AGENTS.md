@@ -20,7 +20,7 @@ needs explaining goes in the document the line points to. Each package has its o
 | touch the web shell, auth screens or kit primitives      | `packages/web-kit/README.md`, `packages/web-platform/README.md`, `apps/web/README.md` |
 | change Firestore rules or indexes                        | `apps/api/firestore.rules` and its specs in `apps/api/src/firestore-rules/`           |
 | set up a GCP project, CI/CD or deploy                    | `docs/DEPLOY.md`                                                                      |
-| take a person through first-time setup ("set me up")     | `docs/ONBOARDING.md` — the state is `pnpm doctor [qa\|prod] --json`                   |
+| take a person through first-time setup ("set me up")     | `docs/ONBOARDING.md` — the state is `pnpm run doctor [qa\|prod] --json`               |
 
 ## Rules that are not optional
 

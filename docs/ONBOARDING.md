@@ -10,8 +10,8 @@ People: tell your agent **"Set me up"** (in Claude Code: `/onboard`). That is al
 ## How to run this
 
 1. **Ask the person's language and answer in it.** This file is English; the conversation does not have to be.
-2. **`pnpm doctor --json` is the state.** Never guess where the setup is: run `pnpm doctor --json` (local),
-   `pnpm doctor qa --json` or `pnpm doctor prod --json`. It is read-only, takes under a minute, and returns every
+2. **`pnpm run doctor --json` is the state.** Never guess where the setup is: run `pnpm run doctor --json` (local),
+   `pnpm run doctor qa --json` or `pnpm run doctor prod --json`. It is read-only, takes under a minute, and returns every
    step with `status` (`ok` / `todo` / `blocked`), `owner` (`agent` / `human`) and `next` (the command or the
    instruction). Do the first `todo`, run the doctor again, repeat. Every script is idempotent, so re-running after
    a failure is always safe.
@@ -46,7 +46,7 @@ People: tell your agent **"Set me up"** (in Claude Code: `/onboard`). That is al
 Same loop, but the person runs the commands. Suggest **Google Cloud Shell**
 (https://shell.cloud.google.com): it opens in the browser, is already signed in to Google Cloud and has `gcloud`,
 `git` and Node. There they need `npm i -g pnpm`, and `gh` (https://cli.github.com) if missing. Give one command at a
-time and ask them to paste back the output of `pnpm doctor <env>` after each step.
+time and ask them to paste back the output of `pnpm run doctor <env>` after each step.
 
 ## Phase 1: get to know the project and agree on a plan
 
@@ -60,9 +60,11 @@ plain words, offer a sensible default for each, and accept "you choose". If the 
    ≤ 20 characters (`acme-crm`). It names the repository and the projects.
 3. **Languages.** The template speaks English, Spanish and Portuguese. Which ones should it keep, and which one is
    the default for a visitor whose browser asks for none of them?
-4. **Where are the users?** It picks the region, and the Firestore region **cannot be changed later**:
-   Argentina/Brazil/Chile → `southamerica-east1`; USA or "everywhere" → `us-central1`; Europe → `europe-west1`;
-   Mexico → `us-central1` (or `northamerica-south1` if available in their projects).
+4. **Region.** Ask it, unless the person or their company already uses one for its projects. It is one region for
+   everything —Firestore, Functions and App Hosting— and the Firestore region **cannot be changed later**. Recommend
+   `us-central1`: it is the cheapest, it has every service the template uses, and App Hosting only runs in
+   `us-central1`, `us-east4`, `us-east5`, `europe-west4`, `asia-east1` and `asia-southeast1` (a web far from its
+   database pays the round trip on every request). Do not pick it from where the users are without asking.
 5. **GitHub.** Their user or an organization? Private (default) or public?
 6. **Google account.** Personal or a company's Google Workspace? A company account may need an admin to allow
    project creation or billing; better to know now.
@@ -76,9 +78,9 @@ Plan for "Acme CRM"
   What it is      CRM for small agencies: contacts, deals and follow-ups.
   Languages       es (default), en
   Repository      github.com/acme/acme-crm (private), from this template
-  QA              Google Cloud project acme-crm-qa, region southamerica-east1
-                  web  https://web--acme-crm-qa.southamerica-east1.hosted.app (approx.; App Hosting confirms it)
-                  API  https://southamerica-east1-acme-crm-qa.cloudfunctions.net
+  QA              Google Cloud project acme-crm-qa, region us-central1
+                  web  https://web--acme-crm-qa.us-central1.hosted.app (approx.; App Hosting confirms it)
+                  API  https://us-central1-acme-crm-qa.cloudfunctions.net
   Production      acme-crm-prod, later; deploys approved by @ana
   Includes        Firebase Auth (email + password), Firestore, Cloud Functions, App Hosting,
                   GitHub Actions without keys: rc* tag → QA, release → production
@@ -108,16 +110,17 @@ across all of Google Cloud and cannot be checked in advance: if creation fails w
 
 ## Decisions
 
-| What                 | Value                              |
-| -------------------- | ---------------------------------- |
-| Short id             | acme-crm                           |
-| Languages            | es (default), en                   |
-| Repository           | acme/acme-crm (private)            |
-| QA project           | acme-crm-qa (southamerica-east1)   |
-| Production           | acme-crm-prod (southamerica-east1) |
-| Production approvers | @ana                               |
+| What                 | Value                       |
+| -------------------- | --------------------------- |
+| Short id             | acme-crm                    |
+| Languages            | es (default), en            |
+| Repository           | acme/acme-crm (private)     |
+| Region               | us-central1 (everything)    |
+| QA project           | acme-crm-qa (us-central1)   |
+| Production           | acme-crm-prod (us-central1) |
+| Production approvers | @ana                        |
 
-Created from the monorepo template on <date>. Setup status: `pnpm doctor qa` / `pnpm doctor prod`.
+Created from the monorepo template on <date>. Setup status: `pnpm run doctor qa` / `pnpm run doctor prod`.
 ```
 
 Keep it up to date when a decision changes (a project id that had to change, the real web URL once known).
@@ -138,14 +141,14 @@ point, named as the plan says.
 This needs `gh` logged in (`gh auth login`, run by the person). If they would rather not install `gh` yet, the
 browser works too: on the template's GitHub page, **Use this template → Create a new repository**, then clone it.
 
-Never push to the template's repository, and never configure GCP while `origin` is the template: `pnpm doctor qa`
+Never push to the template's repository, and never configure GCP while `origin` is the template: `pnpm run doctor qa`
 blocks on it (`github-repo`).
 
 ## Phase 3: run it locally (≈5 minutes, no account needed)
 
 Goal: the person sees the app working on their machine before touching the cloud.
 
-1. `pnpm doctor --json` → install what is missing (`node`, `pnpm`, `java` are `human`; `pnpm install` is yours).
+1. `pnpm run doctor --json` → install what is missing (`node`, `pnpm`, `java` are `human`; `pnpm install` is yours).
 2. If there is no commit yet: `git init -b main && git add -A && git commit -m "chore: start from template"`.
 3. `pnpm check` (every gate should pass on a fresh copy; if not, that is a bug in the template, say so).
 4. Start `pnpm dev` in the background and wait until http://localhost:3000 answers.
@@ -156,7 +159,7 @@ Goal: the person sees the app working on their machine before touching the cloud
 
 ## Phase 4: accounts and repository
 
-1. `pnpm doctor qa --json`. The first `todo`s are the tools and logins: `gcloud`, `gcloud auth login`,
+1. `pnpm run doctor qa --json`. The first `todo`s are the tools and logins: `gcloud`, `gcloud auth login`,
    `pnpm exec firebase login`, `gh auth login`. One at a time, each run by the person.
    - The Google account they sign in with will own the projects; a company account needs permission to create
      projects in its organization (if `gcloud projects create` fails with a policy error, ask them for an existing
@@ -188,11 +191,14 @@ Goal: the person sees the app working on their machine before touching the cloud
    the existing web app. It may start a first build: that is fine.
 
 5. `pnpm setup:web qa`: environment name, automatic rollouts off, CORS origin, Auth domain and email links.
+   A new Firebase project may refuse custom email templates (`EMAIL_TEMPLATE_UPDATE_NOT_ALLOWED`): the emails then
+   link to Firebase's own page (`<project>.firebaseapp.com/__/auth/action`), which verifies and resets just as well,
+   and the doctor's `auth-action-url` stays `todo`. It is not a blocker; do not loop on it.
 6. **First deploy** (ask first, it creates the version tag `rc0.1.1`): `pnpm check`, then
    `pnpm create-version --yes`. Follow it with `gh run watch` (API first, then web; ~10 minutes the first time).
    If a job fails, `gh run view --log-failed`, fix, and re-run the workflow (`gh run rerun <id> --failed`); never
    tag again for the same code.
-7. `pnpm doctor qa` should be all green. **Human:** "Open `<web origin>`, register with a real email, and click the
+7. `pnpm run doctor qa` should be all green. **Human:** "Open `<web origin>`, register with a real email, and click the
    verification link in your inbox (check spam)."
 
 ## Phase 6: production (when the person wants it)
@@ -200,7 +206,7 @@ Goal: the person sees the app working on their machine before touching the cloud
 Same as phase 5 with `prod` and a separate project (`<id>-prod`), so QA mistakes never touch production data.
 Differences:
 
-- `pnpm doctor prod` adds **required reviewers**: the approvers from the plan; set them in
+- `pnpm run doctor prod` adds **required reviewers**: the approvers from the plan; set them in
   `https://github.com/<owner/repo>/settings/environments` → `prod` (private repositories need a paid GitHub plan
   for this; tell the person if theirs does not have it).
 - The deploy is a person's act: `gh release create v<version> --target rc<version> --generate-notes` for a version
@@ -224,7 +230,7 @@ template** starts with unrelated history; add `--allow-unrelated-histories` the 
 
 | Command                                                | What                                                         | Runs as        |
 | ------------------------------------------------------ | ------------------------------------------------------------ | -------------- |
-| `pnpm doctor [qa\|prod] [--json]`                      | where the setup is, next step (read-only)                    | agent          |
+| `pnpm run doctor [qa\|prod] [--json]`                  | where the setup is, next step (read-only)                    | agent          |
 | `pnpm setup:gcp <project> <env> [flags]`               | project, APIs, Firestore, Auth, web app config, WIF, GH vars | agent          |
 | `pnpm setup:web <env>`                                 | backend env name, rollouts off, CORS, Auth domain/links      | agent          |
 | `firebase apphosting:backends:create`                  | App Hosting backend connected to GitHub (browser)            | human          |

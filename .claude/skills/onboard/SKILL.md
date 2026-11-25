@@ -5,4 +5,4 @@ description: Set up this repository end to end with the person — run it locall
 
 Follow `docs/ONBOARDING.md` from the top. Ask the person which language they prefer; if `PROJECT.md` exists, resume
 from it, otherwise start with phase 1: a short interview about the project and a plan they confirm before anything
-is created. Then work phase by phase, using `pnpm doctor <env> --json` as the source of truth after every step.
+is created. Then work phase by phase, using `pnpm run doctor <env> --json` as the source of truth after every step.

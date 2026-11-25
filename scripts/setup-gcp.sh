@@ -38,7 +38,8 @@ done
 require_command gcloud "Install the Google Cloud SDK: https://cloud.google.com/sdk/docs/install"
 ACCOUNT="$(gcloud config get-value account 2>/dev/null || true)"
 [[ -n "$ACCOUNT" && "$ACCOUNT" != "(unset)" ]] || fail "Run 'gcloud auth login' first."
-pnpm exec firebase login:list 2>/dev/null | grep -q '@' || fail "Run 'pnpm exec firebase login' first."
+# `grep -q` would close the pipe early and, with pipefail, fail the check even when it matches.
+pnpm exec firebase login:list 2>/dev/null | grep '@' >/dev/null || fail "Run 'pnpm exec firebase login' first."
 
 log "Project $PROJECT_ID ($ENVIRONMENT) as $ACCOUNT"
 
@@ -47,7 +48,7 @@ if ! gcloud projects describe "$PROJECT_ID" >/dev/null 2>&1; then
     gcloud projects create "$PROJECT_ID" --quiet
     ok "Project created"
 fi
-if ! pnpm exec firebase projects:list 2>/dev/null | grep -q "$PROJECT_ID"; then
+if ! pnpm exec firebase projects:list 2>/dev/null | grep "$PROJECT_ID" >/dev/null; then
     pnpm exec firebase projects:addfirebase "$PROJECT_ID" >/dev/null
     ok "Firebase added"
 fi
@@ -79,7 +80,11 @@ gcloud services enable \
     iam.googleapis.com \
     iamcredentials.googleapis.com \
     sts.googleapis.com \
+    cloudbilling.googleapis.com \
+    firebaseextensions.googleapis.com \
     --project "$PROJECT_ID" --quiet
+# The last two are for firebase-tools: the first Functions deploy tries to enable them, and the GitHub Actions
+# deployer may use APIs but not enable them ("Permissions denied enabling cloudbilling.googleapis.com").
 ok "APIs enabled"
 
 log "Firestore"
@@ -91,8 +96,23 @@ else
     ok "Database (default) created in $REGION"
 fi
 
-log "Firebase Auth: Email/Password"
 TOKEN="$(gcloud auth print-access-token)"
+
+log "Cloud Storage for Firebase"
+# The deploy publishes storage.rules, and firebase-tools stops if the project has no default bucket.
+if curl -fsS -H "Authorization: Bearer $TOKEN" -H "x-goog-user-project: $PROJECT_ID" \
+    "https://firebasestorage.googleapis.com/v1alpha/projects/$PROJECT_ID/defaultBucket" -o /dev/null 2>/dev/null; then
+    ok "Default bucket exists"
+elif curl -fsS -X POST -H "Authorization: Bearer $TOKEN" -H "x-goog-user-project: $PROJECT_ID" \
+    -H 'Content-Type: application/json' \
+    "https://firebasestorage.googleapis.com/v1alpha/projects/$PROJECT_ID/defaultBucket" \
+    -d "{\"location\":\"$REGION\"}" -o /dev/null; then
+    ok "Default bucket created in $REGION"
+else
+    warn "Could not create the default bucket. Console: https://console.firebase.google.com/project/$PROJECT_ID/storage → Get started ($REGION)."
+fi
+
+log "Firebase Auth: Email/Password"
 # Initializes Identity Platform config if needed, then turns on email/password sign-in.
 curl -fsS -X POST -H "Authorization: Bearer $TOKEN" -H "x-goog-user-project: $PROJECT_ID" \
     "https://identitytoolkit.googleapis.com/v2/projects/$PROJECT_ID/identityPlatform:initializeAuth" \
@@ -153,6 +173,8 @@ for (const [name, { value, availability }] of Object.entries(vars)) {
 }
 fs.writeFileSync(`apps/web/apphosting.${environment}.yaml`, lines.join('\n') + '\n');
 NODE
+# Formatted like the rest of the repository: CI runs `pnpm format:check`.
+pnpm exec prettier --write "apps/web/apphosting.$ENVIRONMENT.yaml" >/dev/null
 ok "Wrote apps/web/apphosting.$ENVIRONMENT.yaml"
 
 node -e '
@@ -166,6 +188,13 @@ ok ".firebaserc: alias '$ENVIRONMENT' → $PROJECT_ID"
 
 if [[ -n "$GITHUB_REPOSITORY_ARG" ]]; then
     bash scripts/configure-wif.sh "$PROJECT_ID" "$ENVIRONMENT" "$GITHUB_REPOSITORY_ARG"
+    # The web calls the API in $REGION (apphosting.<env>.yaml); the deploy puts the Functions in FUNCTIONS_REGION,
+    # us-central1 unless the repository says otherwise. Both have to agree.
+    if [[ "$REGION" != "us-central1" ]]; then
+        gh variable set FUNCTIONS_REGION --body "$REGION" --repo "$GITHUB_REPOSITORY_ARG" >/dev/null &&
+            ok "FUNCTIONS_REGION = $REGION" ||
+            warn "Set the repository variable FUNCTIONS_REGION=$REGION, or the Functions deploy to us-central1."
+    fi
 fi
 
 ENV_UPPER="$(printf '%s' "$ENVIRONMENT" | tr '[:lower:]' '[:upper:]')"
@@ -181,7 +210,7 @@ $(printf '\033[1m')Done. One step needs a browser: the App Hosting backend.$(pri
 
   When it exists, connect it to the rest (environment name, rollouts off, CORS, Auth domain and email links):
       pnpm setup:web $ENVIRONMENT
-  and check where you are any time with: pnpm doctor $ENVIRONMENT
+  and check where you are any time with: pnpm run doctor $ENVIRONMENT
 
   Project number (for ${ENV_UPPER}_FIREBASE_PROJECT_NUMBER): $PROJECT_NUMBER
 NEXT
