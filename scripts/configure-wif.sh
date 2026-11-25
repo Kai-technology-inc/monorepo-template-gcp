@@ -73,6 +73,7 @@ ROLES=(
     roles/firebaserules.admin            # Firestore and Storage rules
     roles/datastore.indexAdmin           # Firestore indexes
     roles/firebaseapphosting.admin       # App Hosting rollouts
+    roles/developerconnect.readTokenAccessor # a rollout reads the repository link App Hosting made in Developer Connect
     roles/firebase.viewer                # firebase-tools reads the project
     roles/secretmanager.viewer           # firebase-tools checks the secrets Functions declare
     roles/serviceusage.serviceUsageConsumer
