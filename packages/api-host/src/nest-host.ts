@@ -59,7 +59,10 @@ export function createNestHost<TName extends string>(
         const app = await NestFactory.create(await getAppModule(name), new ExpressAdapter(server), {
             bufferLogs: false,
         });
-        configureApp(app, { title: definitions[name].title });
+        // No Swagger in a deployed Function: its UI needs the files of `swagger-ui-dist` on disk, which the bundle does
+        // not ship (pnpm keeps it out of reach of `apps/functions`), and every request answered 500 in QA. The docs
+        // are the local API's (`pnpm dev`, /docs).
+        configureApp(app, { title: definitions[name].title, swagger: false });
         await app.init();
         return app;
     }
