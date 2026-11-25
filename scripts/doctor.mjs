@@ -390,7 +390,8 @@ if (ENVIRONMENT) {
     );
 
     // ── Deployed ─────────────────────────────────────────────────────────────────────────────────────────────────
-    const apiBase = config.match(/NEXT_PUBLIC_API_BASE_URL\s*\n\s*value:\s*"([^"]+)"/)?.[1];
+    // Either quote: prettier writes the generated YAML with single quotes.
+    const apiBase = config.match(/NEXT_PUBLIC_API_BASE_URL\s*\n\s*value:\s*["']([^"']+)["']/)?.[1];
     const apiHealth = !blocked && apiBase ? await httpStatus(`${apiBase}/account/health`) : 0;
     const deployCommand =
         ENVIRONMENT === 'qa'
