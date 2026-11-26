@@ -5,15 +5,23 @@
 #   pnpm create-version          # asks before pushing
 #   pnpm create-version --yes
 #
+# Runs on the target branch (main), up to date with origin, or on a detached HEAD at origin/main: a worktree made with
+# `git worktree add --detach <dir> origin/main`. The second is how an agent's machine cuts a version without touching
+# a copy that already has main checked out (a worktree cannot take a branch another one holds), and the tag still
+# lands in this repository, where whoever checks the delivery looks for it.
+#
 # Production is a GitHub Release (tag vX.Y.Z) created by a person from a tested rc: see docs/DEPLOY.md.
 source "$(dirname "$0")/lib.sh"
 cd "$REPO_ROOT"
 
 BRANCH="${TARGET_BRANCH:-main}"
-[[ "$(git rev-parse --abbrev-ref HEAD)" == "$BRANCH" ]] || fail "Run from '$BRANCH' (or set TARGET_BRANCH)."
+CURRENT="$(git rev-parse --abbrev-ref HEAD)"
+[[ "$CURRENT" == "$BRANCH" || "$CURRENT" == "HEAD" ]] ||
+    fail "Run from '$BRANCH' (or set TARGET_BRANCH), or from a worktree detached at origin/$BRANCH."
 [[ -z "$(git status --porcelain)" ]] || fail "The working tree is not clean."
 git fetch origin "$BRANCH" --tags --quiet
-[[ "$(git rev-parse HEAD)" == "$(git rev-parse "origin/$BRANCH")" ]] || fail "'$BRANCH' is not up to date with origin."
+[[ "$(git rev-parse HEAD)" == "$(git rev-parse "origin/$BRANCH")" ]] ||
+    fail "HEAD is not origin/$BRANCH: pull, or make the worktree with 'git worktree add --detach <dir> origin/$BRANCH'."
 
 VERSION="$(node -e '
     const fs = require("fs");
@@ -32,6 +40,7 @@ fi
 
 git commit -am "chore(release): $TAG" --quiet
 git tag -a "$TAG" -m "$TAG"
-git push origin "$BRANCH" --quiet
+# HEAD:<branch> works the same on the branch and on a detached worktree of it.
+git push origin "HEAD:refs/heads/$BRANCH" --quiet
 git push origin "$TAG" --quiet
 ok "Pushed $TAG: GitHub Actions deploys it to QA (deploy-qa.yml)."

@@ -68,6 +68,16 @@ pnpm check                      # every gate, on a clean, up-to-date main
 pnpm create-version --yes       # bumps the version, commits, tags rcX.Y.Z, pushes
 ```
 
+From a copy that cannot move to `main` —an agent's machine, where the copy keeps `main` checked out and every task
+works in its own worktree— cut the version from a worktree detached at `origin/main`. The tag lands in the same
+repository, which is where a delivery is checked:
+
+```bash
+git worktree add --detach .worktrees/version origin/main
+(cd .worktrees/version && pnpm install && pnpm create-version --yes)
+git worktree remove .worktrees/version
+```
+
 `deploy-qa.yml` runs on the tag: a gate (typecheck + architecture), then the API (`scripts/deploy-functions.sh qa`:
 bundle, `.env`, `firebase deploy --only functions,firestore,storage`, health checks), then the web
 (`scripts/deploy-web.sh qa`: an App Hosting rollout of that exact commit). The web goes after the API because a new
